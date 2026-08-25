@@ -173,7 +173,7 @@ function addBridge(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>,
   }
   const water = new THREE.Mesh(
     new THREE.PlaneGeometry(18, 8),
-    new THREE.MeshStandardMaterial({ color: 0x0a1620, metalness: 0.82, roughness: 0.12, transparent: true, opacity: 0.88 }),
+    new THREE.MeshStandardMaterial({ color: 0x1a2834, metalness: 0.18, roughness: 0.36, transparent: true, opacity: 0.88 }),
   );
   water.rotation.x = -Math.PI / 2;
   water.position.set(0, 3.55, 45.6);
@@ -317,9 +317,6 @@ function addForegroundOccluders(
   wood: THREE.Texture,
 ): void {
   addLantern(scene, wet, wood, -5.35, 0, 4.35, 1.55);
-  const heroGlow = new THREE.PointLight(0xffb45a, 8.4, 8.5, 1.55);
-  heroGlow.position.set(-5.35, 2.1, 4.35);
-  scene.add(heroGlow);
   const pine = new THREE.Group();
   pine.name = "occluder";
   const trunk = new THREE.Mesh(
@@ -423,15 +420,14 @@ function addMoon(scene: THREE.Scene): void {
 }
 
 function addPuddles(scene: THREE.Scene): void {
-  const mat = new THREE.MeshPhysicalMaterial({
-    color: 0x1a2430,
-    metalness: 0.78,
-    roughness: 0.06,
-    clearcoat: 1,
-    clearcoatRoughness: 0.08,
-    envMapIntensity: 1.8,
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x243040,
+    metalness: 0.22,
+    roughness: 0.28,
+    emissive: 0x000000,
+    envMapIntensity: 0,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.55,
   });
   for (const [x, z, s] of [
     [-1.1, 7.1, 0.85],
@@ -468,7 +464,7 @@ function makeRain(quality: Quality): THREE.LineSegments {
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   return new THREE.LineSegments(
     geo,
-    new THREE.LineBasicMaterial({ color: 0xe8f2fc, transparent: true, opacity: 0.72 }),
+    new THREE.LineBasicMaterial({ color: 0xc8d8ea, transparent: true, opacity: 0.34 }),
   );
 }
 

@@ -28,6 +28,8 @@ export class WorldRenderer {
   private seenVfx = new Set<string>();
   private fadeMats: THREE.Mesh[] = [];
   private followRim: THREE.PointLight | null = null;
+  private composerFailed = false;
+  private frames = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({
@@ -38,7 +40,7 @@ export class WorldRenderer {
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.14;
+    this.renderer.toneMappingExposure = 1.28;
     this.renderer.shadowMap.enabled = true;
     this.scene.background = new THREE.Color(0x0b121c);
     this.scene.add(this.vfx.root);
@@ -81,16 +83,19 @@ export class WorldRenderer {
   }
 
   private setupComposer(quality: Quality): void {
-    if (quality === "low") {
+    this.composer = null;
+    /* Med/low always render the scene directly. High bloom is optional and must not black the world. */
+    if (quality !== "high" || this.composerFailed) return;
+    try {
+      const composer = new EffectComposer(this.renderer);
+      composer.addPass(new RenderPass(this.scene, this.camera));
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.16, 0.36, 0.88));
+      composer.addPass(new OutputPass());
+      this.composer = composer;
+    } catch {
       this.composer = null;
-      return;
+      this.composerFailed = true;
     }
-    const composer = new EffectComposer(this.renderer);
-    composer.addPass(new RenderPass(this.scene, this.camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.18 : 0.12, 0.32, 0.88);
-    composer.addPass(bloom);
-    composer.addPass(new OutputPass());
-    this.composer = composer;
   }
 
   resize(w: number, h: number): void {
@@ -158,11 +163,56 @@ export class WorldRenderer {
 
     this.fadeOccluders(new THREE.Vector3(px, py + 1.1, pz));
 
-    if (this.composer) this.composer.render();
-    else this.renderer.render(this.scene, this.camera);
+    this.present();
 
     const info = this.renderer.info;
     return { fps: 0, draws: info.render.calls };
+  }
+
+  private present(): void {
+    if (this.composer && !this.composerFailed) {
+      try {
+        this.composer.render();
+      } catch {
+        this.disableComposer();
+        this.renderer.render(this.scene, this.camera);
+      }
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
+    this.frames += 1;
+    if (this.frames === 2 && this.composer && !this.composerFailed && this.canvasLooksBlack()) {
+      this.disableComposer();
+    }
+  }
+
+  private disableComposer(): void {
+    this.composerFailed = true;
+    this.composer = null;
+  }
+
+  private canvasLooksBlack(): boolean {
+    try {
+      const gl = this.renderer.getContext();
+      const w = this.renderer.domElement.width;
+      const h = this.renderer.domElement.height;
+      if (w < 4 || h < 4) return false;
+      const samples = [
+        [Math.floor(w * 0.5), Math.floor(h * 0.45)],
+        [Math.floor(w * 0.5), Math.floor(h * 0.62)],
+        [Math.floor(w * 0.38), Math.floor(h * 0.55)],
+        [Math.floor(w * 0.62), Math.floor(h * 0.55)],
+      ];
+      let brightest = 0;
+      const px = new Uint8Array(4);
+      for (const [x, y] of samples) {
+        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        brightest = Math.max(brightest, px[0] + px[1] + px[2]);
+      }
+      return brightest < 10;
+    } catch {
+      return true;
+    }
   }
 
   private fadeOccluders(player: THREE.Vector3): void {

@@ -1,0 +1,26 @@
+import * as THREE from "three";
+import { describe, expect, it } from "vitest";
+import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting } from "../rendering/lighting";
+import { wetStoneMat } from "../rendering/wetstone";
+
+describe("lighting hotfix", () => {
+  it("caps lantern point lights and always keeps hemi + ambient", () => {
+    const scene = new THREE.Scene();
+    const rig = createLighting(scene, "high");
+    expect(scene.environment).toBeNull();
+    expect(rig.ambient.intensity).toBeGreaterThanOrEqual(0.85);
+    expect(rig.fill.intensity).toBeGreaterThanOrEqual(1);
+    for (let i = 0; i < 20; i++) addLanternLight(scene, rig, i, 0, i, "high");
+    expect(MAX_LANTERN_LIGHTS).toBeLessThanOrEqual(5);
+    expect(rig.lanterns.length).toBe(MAX_LANTERN_LIGHTS);
+    const points = scene.children.filter((c) => c instanceof THREE.PointLight);
+    expect(points.length).toBeLessThanOrEqual(MAX_LANTERN_LIGHTS + 1);
+    bakeNightEnv(null as unknown as THREE.WebGLRenderer, scene);
+    expect(scene.environment).toBeNull();
+  });
+
+  it("wet stone factory is Standard, not Physical", () => {
+    expect(wetStoneMat.toString()).toContain("MeshStandardMaterial");
+    expect(wetStoneMat.toString()).not.toContain("MeshPhysicalMaterial");
+  });
+});

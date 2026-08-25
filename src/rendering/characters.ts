@@ -23,8 +23,8 @@ function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial 
     roughness: 0.36,
     metalness: 0.08,
     emissive: new THREE.Color(0x2a1c14),
-    emissiveIntensity: 0.16,
-    envMapIntensity: 1.05,
+    emissiveIntensity: 0.22,
+    envMapIntensity: 0,
   });
 }
 

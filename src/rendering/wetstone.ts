@@ -14,7 +14,7 @@ export function makeWetStoneMaps(): { albedo: THREE.CanvasTexture; roughness: TH
   const a = albedo.getContext("2d")!;
   const r = rough.getContext("2d")!;
 
-  a.fillStyle = "#14181c";
+  a.fillStyle = "#2a323a";
   a.fillRect(0, 0, size, size);
   r.fillStyle = "#c8c8c8";
   r.fillRect(0, 0, size, size);
@@ -31,7 +31,7 @@ export function makeWetStoneMaps(): { albedo: THREE.CanvasTexture; roughness: TH
       const z = iz * ch + jz + 4;
       const w = cw * (0.72 + hash(ix, iz, 3) * 0.2);
       const d = ch * (0.7 + hash(ix, iz, 4) * 0.22);
-      const shade = 58 + hash(ix, iz, 5) * 36;
+      const shade = 92 + hash(ix, iz, 5) * 40;
       const cool = hash(ix, iz, 6) * 10;
       a.fillStyle = `rgb(${shade + 4 | 0},${shade + 6 | 0},${shade + 10 + cool | 0})`;
       a.fillRect(x, z, w, d);
@@ -88,19 +88,18 @@ export function wetStoneMat(
   maps: { albedo: THREE.CanvasTexture; roughness: THREE.CanvasTexture },
   repeatX: number,
   repeatY: number,
-  tint = 0x6e7680,
+  tint = 0x8a929c,
   offsetX = 0,
   offsetY = 0,
-): THREE.MeshPhysicalMaterial {
+): THREE.MeshStandardMaterial {
   const { map, roughnessMap } = stoneClone(maps, repeatX, repeatY, offsetX, offsetY);
-  return new THREE.MeshPhysicalMaterial({
+  return new THREE.MeshStandardMaterial({
     map,
     roughnessMap,
     color: tint,
-    roughness: 0.18,
-    metalness: 0.12,
-    clearcoat: 0.62,
-    clearcoatRoughness: 0.16,
-    envMapIntensity: 1.35,
+    roughness: 0.42,
+    metalness: 0.08,
+    emissive: 0x000000,
+    envMapIntensity: 0,
   });
 }

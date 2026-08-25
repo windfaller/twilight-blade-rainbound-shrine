@@ -18,16 +18,22 @@ describe("combat", () => {
 
   it("ult relic multiplies tagged ult damage", () => {
     resetCombatIds();
-    const st = createSimState();
-    st.relics = ["ult-element"];
-    const a = makeEnemyActor("yokai", 0, 2, 0);
-    const b = makeEnemyActor("yokai", 2, 2, 0);
-    a.maxHp = b.maxHp = 400;
-    a.hp = b.hp = 400;
-    applyDamage(st, st.player, a, 40, "moon", 0, ["ult"]);
-    st.relics = [];
-    applyDamage(st, st.player, b, 40, "moon", 0, ["ult"]);
-    expect(400 - a.hp).toBeGreaterThan(400 - b.hp);
+    const roll = Math.random;
+    Math.random = () => 0.99;
+    try {
+      const st = createSimState();
+      st.relics = ["ult-element"];
+      const a = makeEnemyActor("yokai", 0, 2, 0);
+      const b = makeEnemyActor("yokai", 2, 2, 0);
+      a.maxHp = b.maxHp = 400;
+      a.hp = b.hp = 400;
+      applyDamage(st, st.player, a, 40, "moon", 0, ["ult"]);
+      st.relics = [];
+      applyDamage(st, st.player, b, 40, "moon", 0, ["ult"]);
+      expect(400 - a.hp).toBeGreaterThan(400 - b.hp);
+    } finally {
+      Math.random = roll;
+    }
   });
 
   it("six kits have distinct skill ids", () => {
