@@ -99,7 +99,7 @@ export function createSimState(): SimState {
     actors: [makeKeeper()],
     projectiles: [],
     pulses: [],
-    camera: { yawOffset: 0, yawReturn: 0, zoom: 8.4, shake: 0, lookX: SPAWN.x, lookZ: SPAWN.z + 1.25 },
+    camera: { yawOffset: 0, yawReturn: 0, zoom: 10.6, shake: 0, lookX: SPAWN.x, lookZ: SPAWN.z + 1.15 },
     path: { waypoints: [], index: 0 },
     combatLog: [],
     vfx: [],

@@ -3,7 +3,7 @@ import { lerp } from "../game/math";
 import type { CameraSim, Vec3 } from "../game/types";
 
 const ISO = THREE.MathUtils.degToRad(34);
-const LOOK_AHEAD = 1.25;
+const LOOK_AHEAD = 1.15;
 
 export function createGameCamera(): THREE.PerspectiveCamera {
   const cam = new THREE.PerspectiveCamera(26, 1, 0.2, 240);

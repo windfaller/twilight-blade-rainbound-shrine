@@ -14,7 +14,7 @@ export function makeWetWoodMaps(): { albedo: THREE.CanvasTexture; roughness: THR
   rough.width = rough.height = size;
   const a = albedo.getContext("2d")!;
   const r = rough.getContext("2d")!;
-  a.fillStyle = "#1a1410";
+  a.fillStyle = "#100c0a";
   a.fillRect(0, 0, size, size);
   r.fillStyle = "#b0b0b0";
   r.fillRect(0, 0, size, size);
@@ -23,8 +23,8 @@ export function makeWetWoodMaps(): { albedo: THREE.CanvasTexture; roughness: THR
   const bw = size / boards;
   for (let i = 0; i < boards; i++) {
     const x = i * bw;
-    const shade = 46 + hash(i, 1) * 16;
-    a.fillStyle = `rgb(${(shade + 8) | 0},${(shade + 2) | 0},${(shade - 6) | 0})`;
+    const shade = 34 + hash(i, 1) * 12;
+    a.fillStyle = `rgb(${(shade + 6) | 0},${(shade + 1) | 0},${(shade - 8) | 0})`;
     a.fillRect(x + 2, 0, bw - 4, size);
     a.fillStyle = "rgba(8,6,5,0.85)";
     a.fillRect(x, 0, 3, size);
@@ -70,8 +70,8 @@ export function wetWoodMat(
     map,
     roughnessMap,
     color: tint,
-    roughness: 0.28,
-    metalness: 0.08,
+    roughness: 0.38,
+    metalness: 0.05,
     emissive: 0x000000,
     envMapIntensity: 0,
   });

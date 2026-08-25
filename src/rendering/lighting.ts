@@ -13,12 +13,12 @@ export interface LightRig {
 
 export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
   scene.environment = null;
-  scene.fog = new THREE.FogExp2(0x0b1c22, quality === "low" ? 0.012 : 0.0075);
-  const ambient = new THREE.AmbientLight(0x2c4652, 0.88);
+  scene.fog = new THREE.FogExp2(0x081820, quality === "low" ? 0.012 : 0.0082);
+  const ambient = new THREE.AmbientLight(0x243e4a, 0.86);
   scene.add(ambient);
-  const hemi = new THREE.HemisphereLight(0x4a7a88, 0x0e1210, 1.12);
+  const hemi = new THREE.HemisphereLight(0x3e6e7c, 0x0a1214, 1.18);
   scene.add(hemi);
-  const moon = new THREE.DirectionalLight(0xa8c4c8, 1.08);
+  const moon = new THREE.DirectionalLight(0x9bb8bc, 0.92);
   moon.position.set(-18, 26, -2);
   moon.target.position.set(0, 0, 12);
   moon.castShadow = quality === "high";
@@ -35,7 +35,7 @@ export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
   }
   scene.add(moon);
   scene.add(moon.target);
-  const followRim = new THREE.PointLight(0xffc56a, 2.6, 5.6, 1.35);
+  const followRim = new THREE.PointLight(0xffc56a, 1.7, 4.8, 1.45);
   followRim.position.set(1.4, 1.8, 8.2);
   scene.add(followRim);
   return { moon, fill: hemi, ambient, lanterns: [], followRim };
@@ -52,7 +52,7 @@ export function lanternWarmth(lanterns: THREE.PointLight[], x: number, z: number
 
 export function addLanternLight(scene: THREE.Scene, rig: LightRig, x: number, y: number, z: number, quality: Quality): void {
   if (rig.lanterns.length >= MAX_LANTERN_LIGHTS) return;
-  const intensity = quality === "low" ? 3.6 : 4.8;
+  const intensity = quality === "low" ? 3.2 : 4.1;
   const light = new THREE.PointLight(0xff9a3c, intensity, 11.2, 1.12);
   light.position.set(x, y + 1.28, z);
   light.castShadow = false;

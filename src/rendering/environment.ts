@@ -114,7 +114,7 @@ function addWoodWalkway(scene: THREE.Scene, minX: number, maxX: number, minZ: nu
   let i = 0;
   while (x < maxX - 0.08) {
     const w = Math.min(plank, maxX - x);
-    const mat = wetWoodMat(maps, 0.14, Math.max(1.1, depth / 1.4), 0x3c2c20, i * 0.13);
+    const mat = wetWoodMat(maps, 0.14, Math.max(1.1, depth / 1.4), 0x2a1e16, i * 0.13);
     const board = new THREE.Mesh(new THREE.BoxGeometry(w * 0.94, 0.08, depth), mat);
     board.position.set(x + w * 0.5, y, (minZ + maxZ) / 2);
     board.receiveShadow = true;
