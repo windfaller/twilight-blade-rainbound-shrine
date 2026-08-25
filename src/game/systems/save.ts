@@ -21,16 +21,20 @@ export const DEFAULT_UNLOCKS: UnlocksState = {
   bestTime: 0,
 };
 
+export function coerceSettings(partial?: Partial<SettingsState>): SettingsState {
+  const settings = { ...DEFAULT_SETTINGS, ...partial };
+  /* Production hotfix: old default was high bloom, which blacks the world on some GPUs. */
+  if (settings.quality === "high") settings.quality = "med";
+  return settings;
+}
+
 export function loadSave(): SaveBlob {
   try {
     const raw = globalThis.localStorage?.getItem(KEY);
-    if (!raw) return { settings: { ...DEFAULT_SETTINGS }, unlocks: { ...DEFAULT_UNLOCKS, clearedKits: [], relicsSeen: [] } };
+    if (!raw) return { settings: coerceSettings(), unlocks: { ...DEFAULT_UNLOCKS, clearedKits: [], relicsSeen: [] } };
     const parsed = JSON.parse(raw) as SaveBlob;
-    const settings = { ...DEFAULT_SETTINGS, ...parsed.settings };
-    /* Production hotfix: old default was high bloom, which blacks the world on some GPUs. */
-    if (settings.quality === "high") settings.quality = "med";
     return {
-      settings,
+      settings: coerceSettings(parsed.settings),
       unlocks: {
         ...DEFAULT_UNLOCKS,
         ...parsed.unlocks,
@@ -39,7 +43,7 @@ export function loadSave(): SaveBlob {
       },
     };
   } catch {
-    return { settings: { ...DEFAULT_SETTINGS }, unlocks: { ...DEFAULT_UNLOCKS, clearedKits: [], relicsSeen: [] } };
+    return { settings: coerceSettings(), unlocks: { ...DEFAULT_UNLOCKS, clearedKits: [], relicsSeen: [] } };
   }
 }
 
