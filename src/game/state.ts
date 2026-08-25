@@ -1,6 +1,6 @@
 import { CHARACTERS } from "./data/characters";
 import { KEEPER_DEF } from "./data/characters";
-import { KEEPER_POS, SPAWN, TRIGGERS } from "./data/stages";
+import { KEEPER_ANCHOR, KEEPER_POS, SPAWN, TRIGGERS } from "./data/stages";
 import { loadSave, writeSave } from "./systems/save";
 import type { Actor, CharacterId, SimState, UiSnapshot } from "./types";
 
@@ -198,7 +198,18 @@ export function toSnapshot(state: SimState): UiSnapshot {
     ultCutIn: state.ultCutIn,
     interactInRange: false,
     objective: objectiveText(state),
+    objectiveTarget: objectiveTarget(state),
   };
+}
+
+function objectiveTarget(state: SimState): { x: number; z: number } | null {
+  if (!state.blessing) return { x: KEEPER_ANCHOR.x, z: KEEPER_ANCHOR.z };
+  if (!state.encountersCleared.includes("enc1")) return { x: 0, z: 56 };
+  if (!state.encountersCleared.includes("enc2")) return { x: 0, z: 63 };
+  if (!state.encountersCleared.includes("enc3")) return { x: 0, z: 69 };
+  if (!state.encountersCleared.includes("elite")) return { x: 0, z: 83 };
+  if (!state.encountersCleared.includes("boss")) return { x: 0, z: 108 };
+  return null;
 }
 
 function objectiveText(state: SimState): string {

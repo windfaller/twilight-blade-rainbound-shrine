@@ -459,4 +459,5 @@ export interface UiSnapshot {
   ultCutIn: number;
   interactInRange: boolean;
   objective: string;
+  objectiveTarget: { x: number; z: number } | null;
 }

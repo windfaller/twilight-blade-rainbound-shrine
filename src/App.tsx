@@ -218,6 +218,11 @@ export default function App() {
               inputRef.current.interactBuf = true;
               game.enqueue({ type: "advanceDialogue" });
             }}
+            onGoObjective={() => {
+              const t = game.snapshot().objectiveTarget;
+              if (!t) return;
+              inputRef.current.pendingClick = { x: t.x, z: t.z, interact: game.state.blessing ? null : "keeper" };
+            }}
             onSkill={(i) => {
               inputRef.current.skillBuf[i] = true;
             }}

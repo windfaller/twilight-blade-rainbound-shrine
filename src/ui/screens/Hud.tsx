@@ -5,6 +5,7 @@ export function Hud({
   snap,
   onPause,
   onInteract,
+  onGoObjective,
   onSkill,
   onAttack,
   onDodge,
@@ -12,6 +13,7 @@ export function Hud({
   snap: UiSnapshot;
   onPause: () => void;
   onInteract: () => void;
+  onGoObjective: () => void;
   onSkill: (i: 0 | 1 | 2) => void;
   onAttack: () => void;
   onDodge: () => void;
@@ -36,11 +38,13 @@ export function Hud({
           <Bar value={snap.boss.hp / snap.boss.maxHp} color="#3aa7d8" />
         </div>
       )}
-      <div style={{ position: "absolute", top: 52, left: "50%", transform: "translateX(-50%)", pointerEvents: "none", textAlign: "center" }}>
-        <div className="tb-gold" style={{ letterSpacing: "0.16em" }}>
-          {snap.objective}
-        </div>
-      </div>
+      <button
+        className="tb-btn"
+        onClick={onGoObjective}
+        style={{ position: "absolute", top: 52, left: "50%", transform: "translateX(-50%)", letterSpacing: "0.12em" }}
+      >
+        {snap.objective}
+      </button>
       {snap.encounterName && !snap.boss && (
         <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", color: "var(--gold)", pointerEvents: "none" }}>
           {snap.encounterName}

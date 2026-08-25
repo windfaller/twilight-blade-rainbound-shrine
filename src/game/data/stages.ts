@@ -8,7 +8,7 @@ export const KEEPER_ANCHOR: InteractionAnchor = {
   x: 2.15,
   y: 5,
   z: 33.4,
-  radius: 1.35,
+  radius: 2.15,
   targetId: "keeper",
 };
 

@@ -15,6 +15,7 @@ export class Game {
   nav: NavGrid = bakeNav(false, false);
   private navGate = false;
   private navBroken = false;
+  private pendingKeeperTalk = false;
   private acc = 0;
   private cmds: UiCommand[] = [];
   private listeners = new Set<() => void>();
@@ -119,14 +120,18 @@ export class Game {
       const a = nearestAnchor(st.player.pos.x, st.player.pos.z, [KEEPER_ANCHOR]);
       const path = findPath(this.nav, st.player.pos.x, st.player.pos.z, a.x, a.z);
       setClickPath(st.path, path.length ? path : [{ x: a.x, z: a.z }]);
+      this.pendingKeeperTalk = true;
     } else if (input.clickPath && input.pointerWorld) {
       const t = nearestWalkable(this.nav, input.pointerWorld.x, input.pointerWorld.z);
       const path = findPath(this.nav, st.player.pos.x, st.player.pos.z, t.x, t.z);
       setClickPath(st.path, path);
     }
 
-    if (input.interact) {
-      if (keeperInRange(st)) beginKeeperTalk(st);
+    if (input.interact || (this.pendingKeeperTalk && keeperInRange(st))) {
+      if (keeperInRange(st)) {
+        beginKeeperTalk(st);
+        this.pendingKeeperTalk = false;
+      }
     }
 
     if (input.dodge) {
