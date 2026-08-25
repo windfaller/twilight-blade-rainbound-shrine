@@ -105,7 +105,7 @@ export class Game {
     st.tick += 1;
     if (st.screen === "explore" || st.screen === "combat") st.runTime += dt;
 
-    st.camera.zoom = Math.max(8, Math.min(26, st.camera.zoom + input.zoomDelta));
+    st.camera.zoom = Math.max(7.2, Math.min(22, st.camera.zoom + input.zoomDelta));
     st.camera.yawOffset += input.rotate;
     st.camera.yawOffset = Math.max(-0.24, Math.min(0.24, st.camera.yawOffset));
     if (Math.abs(input.rotate) < 1e-4) {

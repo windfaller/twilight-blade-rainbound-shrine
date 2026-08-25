@@ -11,8 +11,9 @@ import { lerp, lerpAngle } from "../game/math";
 import type { Actor, CharacterId, EnemyId, Quality } from "../game/types";
 import { makeCharacterView, syncCharacterView, swapTexture, type CharacterView } from "./characters";
 import { cameraYaw, createGameCamera, syncCamera } from "./camera";
+import { cutoutSpriteTexture } from "./cutout";
 import { buildEnvironment, stepAtmosphere, type EnvHandles } from "./environment";
-import { applyQuality, createLighting } from "./lighting";
+import { applyQuality, bakeNightEnv, createLighting } from "./lighting";
 import { VfxWorld } from "./vfx";
 
 export class WorldRenderer {
@@ -26,6 +27,7 @@ export class WorldRenderer {
   textures = new Map<string, THREE.Texture>();
   private seenVfx = new Set<string>();
   private fadeMats: THREE.Mesh[] = [];
+  private followRim: THREE.PointLight | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({
@@ -36,9 +38,9 @@ export class WorldRenderer {
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
+    this.renderer.toneMappingExposure = 1.14;
     this.renderer.shadowMap.enabled = true;
-    this.scene.background = new THREE.Color(0x070b14);
+    this.scene.background = new THREE.Color(0x0b121c);
     this.scene.add(this.vfx.root);
   }
 
@@ -46,7 +48,7 @@ export class WorldRenderer {
     const loader = new THREE.TextureLoader();
     let done = 0;
     for (const e of entries) {
-      const tex = await new Promise<THREE.Texture>((resolve, reject) => {
+      let tex = await new Promise<THREE.Texture>((resolve, reject) => {
         loader.load(
           e.url,
           (t) => resolve(t),
@@ -55,6 +57,9 @@ export class WorldRenderer {
         );
       });
       tex.colorSpace = THREE.SRGBColorSpace;
+      if (e.id !== "farscape" && !e.id.startsWith("tex-")) {
+        tex = cutoutSpriteTexture(tex);
+      }
       this.textures.set(e.id, tex);
       done += 1;
       onProg(done / entries.length, e.id);
@@ -65,7 +70,9 @@ export class WorldRenderer {
     const tex: Record<string, THREE.Texture> = {};
     for (const [k, v] of this.textures) tex[k] = v;
     const lights = createLighting(this.scene, quality);
+    this.followRim = lights.followRim;
     this.env = buildEnvironment(this.scene, tex, lights, quality);
+    bakeNightEnv(this.renderer, this.scene);
     applyQuality(this.renderer, quality);
     this.setupComposer(quality);
     this.scene.traverse((o) => {
@@ -80,7 +87,7 @@ export class WorldRenderer {
     }
     const composer = new EffectComposer(this.renderer);
     composer.addPass(new RenderPass(this.scene, this.camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.28 : 0.16, 0.4, 0.85);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.18 : 0.12, 0.32, 0.88);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
     this.composer = composer;
@@ -146,6 +153,7 @@ export class WorldRenderer {
     const px = lerp(st.player.prevPos.x, st.player.pos.x, alpha);
     const py = lerp(st.player.prevPos.y, st.player.pos.y, alpha);
     const pz = lerp(st.player.prevPos.z, st.player.pos.z, alpha);
+    if (this.followRim) this.followRim.position.set(px + 1.15, py + 1.65, pz + 0.35);
     syncCamera(this.camera, st.camera, { x: px, y: py, z: pz }, this.renderer.domElement.clientWidth / Math.max(1, this.renderer.domElement.clientHeight));
 
     this.fadeOccluders(new THREE.Vector3(px, py + 1.1, pz));

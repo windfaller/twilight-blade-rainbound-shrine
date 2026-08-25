@@ -82,7 +82,7 @@ export function createSimState(): SimState {
     tick: 0,
     screen: "loading",
     overlay: null,
-    loading: { progress: 0, label: "點亮山門燈火…", error: null, ready: false },
+    loading: { progress: 0, label: "正在點亮山門", error: null, ready: false },
     selectedKit: kit,
     hoveredKit: kit,
     confirmedKit: false,
@@ -99,7 +99,7 @@ export function createSimState(): SimState {
     actors: [makeKeeper()],
     projectiles: [],
     pulses: [],
-    camera: { yawOffset: 0, yawReturn: 0, zoom: 16.5, shake: 0, lookX: SPAWN.x, lookZ: SPAWN.z },
+    camera: { yawOffset: 0, yawReturn: 0, zoom: 14.8, shake: 0, lookX: SPAWN.x, lookZ: SPAWN.z + 2.1 },
     path: { waypoints: [], index: 0 },
     combatLog: [],
     vfx: [],
@@ -199,6 +199,8 @@ export function toSnapshot(state: SimState): UiSnapshot {
     interactInRange: false,
     objective: objectiveText(state),
     objectiveTarget: objectiveTarget(state),
+    place: placeName(state.player.pos.z),
+    weather: state.bossPhase >= 2 ? "暴雨" : "夜雨",
   };
 }
 
@@ -210,6 +212,14 @@ function objectiveTarget(state: SimState): { x: number; z: number } | null {
   if (!state.encountersCleared.includes("elite")) return { x: 0, z: 83 };
   if (!state.encountersCleared.includes("boss")) return { x: 0, z: 108 };
   return null;
+}
+
+function placeName(z: number): string {
+  if (z < 24) return "雨鎖山門";
+  if (z < 50) return "夜渡斷橋";
+  if (z < 75) return "森林祭壇";
+  if (z < 96) return "番大將演武";
+  return "雨蝕深處";
 }
 
 function objectiveText(state: SimState): string {

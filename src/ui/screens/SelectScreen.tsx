@@ -18,7 +18,10 @@ export function SelectScreen({
   return (
     <div className="tb-screen" style={{ padding: "4vh 4vw", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 className="tb-title">選擇刃客</h2>
+        <div>
+          <p className="tb-reading">CHOOSE YOUR BLADE</p>
+          <h2 className="tb-title">選擇刃客</h2>
+        </div>
         <button className="tb-btn ghost" onClick={onBack}>
           返回
         </button>
@@ -43,13 +46,13 @@ export function SelectScreen({
                 <strong>
                   {c.name} / {c.nameEn}
                 </strong>
-                <div style={{ color: "var(--muted)", fontSize: 14 }}>{c.role}</div>
+                <div style={{ color: "var(--muted)" }}>{c.role}</div>
               </div>
             </button>
           ))}
         </div>
         <div className="tb-panel" style={{ padding: 18, overflow: "auto" }}>
-          <img src={kit.artFull} alt={kit.name} style={{ width: "100%", height: 260, objectFit: "contain", background: "#080c14" }} />
+          <img src={kit.artFull} alt={kit.name} style={{ width: "100%", height: 260, objectFit: "contain", background: "#070a10" }} />
           <h3 className="tb-title" style={{ marginTop: 12 }}>
             {kit.name} {kit.nameEn}
           </h3>

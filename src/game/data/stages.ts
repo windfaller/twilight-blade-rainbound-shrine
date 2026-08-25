@@ -1,7 +1,7 @@
 import { KEEPER_ART } from "../../assets/manifest";
 import type { Circle, InteractionAnchor, Obstacle, TriggerZone, WalkPoly } from "../types";
 
-export const SPAWN = { x: 0, y: 0, z: 2 };
+export const SPAWN = { x: 0, y: 0, z: 7.55 };
 export const KEEPER_POS = { x: 4.2, y: 5, z: 34.2 };
 export const KEEPER_ANCHOR: InteractionAnchor = {
   id: "keeper-anchor",
@@ -13,8 +13,8 @@ export const KEEPER_ANCHOR: InteractionAnchor = {
 };
 
 export const WALK_POLYS: WalkPoly[] = [
-  { id: "spawn", y: 0, points: box(-7, 7, -2, 9) },
-  { id: "stairs", y: 2.5, points: box(-4.2, 4.2, 8, 25) },
+  { id: "spawn", y: 0, points: box(-4.6, 4.6, 5.4, 8.6) },
+  { id: "stairs", y: 2.5, points: box(-3.4, 3.4, 8, 25) },
   { id: "torii-yard", y: 5, points: box(-6.5, 6.5, 24, 30) },
   { id: "keeper", y: 5, points: box(-8, 8.5, 29.5, 41) },
   { id: "bridge", y: 5, points: box(-2.6, 2.6, 40.5, 51) },
@@ -34,6 +34,8 @@ function box(minX: number, maxX: number, minZ: number, maxZ: number) {
 }
 
 export const PILLARS: Circle[] = [
+  { x: -3.35, z: 8.85, r: 0.5 },
+  { x: 3.35, z: 8.85, r: 0.5 },
   { x: -3.6, z: 22.2, r: 0.55 },
   { x: 3.6, z: 22.2, r: 0.55 },
   { x: -3.8, z: 48, r: 0.45 },
@@ -43,11 +45,12 @@ export const PILLARS: Circle[] = [
 ];
 
 export const LANTERN_POINTS: { x: number; z: number; y: number }[] = [
-  { x: -5.2, z: 4, y: 0 },
-  { x: 5.2, z: 6, y: 0 },
-  { x: -3.4, z: 12, y: 1.2 },
-  { x: 3.4, z: 16, y: 2.4 },
-  { x: -3.2, z: 21, y: 4 },
+  { x: -3.55, z: 5.15, y: 0 },
+  { x: -2.35, z: 7.05, y: 0 },
+  { x: 2.45, z: 6.85, y: 0 },
+  { x: -2.7, z: 12.2, y: 1.2 },
+  { x: 2.7, z: 16.1, y: 2.4 },
+  { x: -2.6, z: 21, y: 4 },
   { x: 5.6, z: 32, y: 5 },
   { x: -6.2, z: 36, y: 5 },
   { x: -8.4, z: 56, y: 5 },
@@ -124,6 +127,7 @@ export function groundHeight(_x: number, z: number): number {
 }
 
 export const TORII_GATES = [
+  { x: 0, z: 8.85, y: 0, scale: 1.02 },
   { x: 0, z: 22.2, y: 4.2, scale: 1 },
   { x: 0, z: 48, y: 5, scale: 0.92 },
   { x: 0, z: 93.4, y: 5, scale: 1.15 },

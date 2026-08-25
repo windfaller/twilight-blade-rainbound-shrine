@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { bakeNav, findPath, isWalkablePoint, nearestWalkable } from "../game/systems/navigation";
-import { PILLARS } from "../game/data/stages";
+import { PILLARS, SPAWN } from "../game/data/stages";
 
 describe("navigation", () => {
   it("spawn and altar are walkable, pillars are not", () => {
-    expect(isWalkablePoint(0, 2, false, false)).toBe(true);
+    expect(isWalkablePoint(SPAWN.x, SPAWN.z, false, false)).toBe(true);
     expect(isWalkablePoint(0, 56, false, false)).toBe(true);
     expect(isWalkablePoint(PILLARS[0].x, PILLARS[0].z, false, false)).toBe(false);
   });
 
   it("finds a path from spawn toward the keeper without insane detours", () => {
     const grid = bakeNav(false, false);
-    const path = findPath(grid, 0, 2, 2.15, 33.4);
+    const path = findPath(grid, SPAWN.x, SPAWN.z, 2.15, 33.4);
     expect(path.length).toBeGreaterThan(3);
     expect(path.length).toBeLessThan(80);
     const end = path[path.length - 1];

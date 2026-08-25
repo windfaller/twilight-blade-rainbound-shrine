@@ -173,6 +173,11 @@ export default function App() {
       <div className="tb-canvas-host">
         <canvas ref={canvasRef} />
       </div>
+      <div className="tb-rain" aria-hidden>
+        <div className="tb-rain-a" />
+        <div className="tb-rain-b" />
+      </div>
+      <div className="tb-vignette" aria-hidden />
       <div className="tb-ui">
         {screen === "loading" && <LoadingScreen loading={snap.loading} onRetry={() => { game.enqueue({ type: "retryLoad" }); void loadWorld(rendererRef.current!); }} />}
         {screen === "menu" && (
@@ -268,16 +273,6 @@ export default function App() {
           <div
             ref={stickRef}
             className="tb-stick"
-            style={{
-              position: "absolute",
-              left: 24,
-              bottom: 96,
-              width: 112,
-              height: 112,
-              borderRadius: "50%",
-              border: "1px solid rgba(224,180,90,0.35)",
-              background: "rgba(8,12,22,0.35)",
-            }}
           />
         )}
       </div>
@@ -286,7 +281,7 @@ export default function App() {
 
   async function loadWorld(renderer: WorldRenderer) {
     try {
-      game.setLoading(0.05, "讀取名冊…");
+      game.setLoading(0.05, "正在點亮山門");
       await renderer.loadTextures(ASSET_MANIFEST, (n, id) => {
         game.setLoading(0.08 + n * 0.7, `裝載 ${id}`);
       });
