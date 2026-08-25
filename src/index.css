@@ -315,7 +315,7 @@ canvas {
 
 .tb-hud-place {
   position: absolute;
-  top: 16px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -324,15 +324,17 @@ canvas {
 
 .tb-hud-weather {
   color: var(--amber);
-  letter-spacing: 0.28em;
-  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  font-size: 0.68rem;
+  text-shadow: 0 1px 8px rgba(7, 10, 16, 0.7);
 }
 
 .tb-hud-locale {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 0.28em;
-  font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+  letter-spacing: 0.2em;
+  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+  text-shadow: 0 1px 10px rgba(7, 10, 16, 0.75);
 }
 
 .tb-hud-boss {
@@ -346,18 +348,19 @@ canvas {
 
 .tb-hud-obj {
   position: absolute;
-  top: 86px;
+  top: 78px;
   left: 18px;
   transform: none;
   min-height: 44px;
-  padding: 0.45rem 0.9rem 0.45rem 1.35rem;
+  padding: 0.35rem 0.7rem 0.35rem 1.15rem;
   border: 0;
-  border-left: 1px solid rgba(231, 184, 104, 0.7);
-  background: linear-gradient(90deg, rgba(12, 18, 28, 0.62), rgba(12, 18, 28, 0.08));
+  border-left: 1px solid rgba(231, 184, 104, 0.55);
+  background: transparent;
   color: var(--paper);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   font-family: var(--font-display);
   text-align: left;
+  text-shadow: 0 1px 8px rgba(7, 10, 16, 0.8);
 }
 
 .tb-hud-gem {
@@ -404,16 +407,17 @@ canvas {
 .tb-hud-skill {
   min-height: 44px;
   min-width: 44px;
-  padding: 0.35rem 0.55rem;
-  border: 1px solid rgba(232, 226, 211, 0.28);
+  padding: 0.28rem 0.45rem;
+  border: 0;
   background: transparent;
   color: var(--paper);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   font-family: var(--font-display);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
+  text-shadow: 0 1px 8px rgba(7, 10, 16, 0.75);
 }
 
 .tb-hud-skill:disabled {
