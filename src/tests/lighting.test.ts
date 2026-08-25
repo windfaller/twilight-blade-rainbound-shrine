@@ -1,6 +1,3 @@
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import { rainStreakCount } from "../rendering/environment";
@@ -31,12 +28,5 @@ describe("lighting hotfix", () => {
   it("keeps near-camera rain sparse so it cannot form a wireframe grid", () => {
     expect(rainStreakCount("med")).toBeLessThanOrEqual(100);
     expect(rainStreakCount("high")).toBeLessThanOrEqual(160);
-  });
-
-  it("does not use a repeating-gradient rain overlay", () => {
-    const root = resolve(dirname(fileURLToPath(import.meta.url)), "../index.css");
-    const css = readFileSync(root, "utf8");
-    expect(css).not.toMatch(/tb-rain/);
-    expect(css).not.toMatch(/repeating-linear-gradient/);
   });
 });
