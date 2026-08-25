@@ -82,7 +82,7 @@ export function createSimState(): SimState {
     tick: 0,
     screen: "loading",
     overlay: null,
-    loading: { progress: 0, label: "點亮山門燈火…", error: null, ready: false },
+    loading: { progress: 0, label: "正在點亮山門", error: null, ready: false },
     selectedKit: kit,
     hoveredKit: kit,
     confirmedKit: false,

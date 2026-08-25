@@ -24,12 +24,12 @@ export function Hud({
   return (
     <div className="pass-through" style={{ position: "absolute", inset: 0 }}>
       <div style={{ position: "absolute", left: 16, top: 14, display: "flex", gap: 10, alignItems: "center", pointerEvents: "auto" }}>
-        <img src={kit.artPortrait} alt={kit.name} width={56} height={56} style={{ borderRadius: 6, border: "1px solid var(--gold)", objectFit: "cover" }} />
+        <img src={kit.artPortrait} alt={kit.name} width={56} height={56} style={{ border: "1px solid var(--amber)", objectFit: "cover" }} />
         <div style={{ minWidth: 220 }}>
-          <div style={{ fontFamily: "var(--font-display)" }}>{kit.name}</div>
-          <Bar value={hp} color="#9b2034" />
-          <Bar value={sp} color="#5aa7e0" />
-          {snap.player.shield > 0 && <div style={{ color: "var(--gold)" }}>護盾 {Math.round(snap.player.shield)}</div>}
+          <div style={{ fontFamily: "var(--font-display)", letterSpacing: "0.18em" }}>{kit.name}</div>
+          <Bar value={hp} color="#c43b2a" />
+          <Bar value={sp} color="#7eb6d8" />
+          {snap.player.shield > 0 && <div style={{ color: "var(--amber)" }}>護盾 {Math.round(snap.player.shield)}</div>}
         </div>
       </div>
       {snap.boss && (
@@ -46,7 +46,7 @@ export function Hud({
         {snap.objective}
       </button>
       {snap.encounterName && !snap.boss && (
-        <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", color: "var(--gold)", pointerEvents: "none" }}>
+        <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", color: "var(--amber)", pointerEvents: "none" }}>
           {snap.encounterName}
         </div>
       )}
@@ -102,7 +102,7 @@ export function Hud({
 
 function Bar({ value, color }: { value: number; color: string }) {
   return (
-    <div style={{ height: 8, background: "#1a2233", borderRadius: 99, overflow: "hidden", marginTop: 4 }}>
+    <div style={{ height: 8, background: "#151b24", overflow: "hidden", marginTop: 4, border: "1px solid rgba(231,184,104,0.2)" }}>
       <div style={{ width: `${Math.round(Math.max(0, Math.min(1, value)) * 100)}%`, height: "100%", background: color }} />
     </div>
   );

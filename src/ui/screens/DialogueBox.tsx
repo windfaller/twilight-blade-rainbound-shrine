@@ -24,7 +24,7 @@ export function DialogueBox({
         pointerEvents: "auto",
       }}
     >
-      <img src={portrait} alt={speaker} width={88} height={110} style={{ objectFit: "cover", border: "1px solid var(--gold)", borderRadius: 6 }} />
+      <img src={portrait} alt={speaker} width={88} height={110} style={{ objectFit: "cover", border: "1px solid var(--amber)" }} />
       <button className="tb-panel" onClick={onAdvance} style={{ flex: 1, textAlign: "left", padding: 16, color: "inherit" }}>
         <div className="tb-gold">{speaker}</div>
         <p style={{ margin: "8px 0 12px" }}>{text}</p>

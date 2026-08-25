@@ -173,6 +173,7 @@ export default function App() {
       <div className="tb-canvas-host">
         <canvas ref={canvasRef} />
       </div>
+      <div className="tb-vignette" aria-hidden />
       <div className="tb-ui">
         {screen === "loading" && <LoadingScreen loading={snap.loading} onRetry={() => { game.enqueue({ type: "retryLoad" }); void loadWorld(rendererRef.current!); }} />}
         {screen === "menu" && (
@@ -286,7 +287,7 @@ export default function App() {
 
   async function loadWorld(renderer: WorldRenderer) {
     try {
-      game.setLoading(0.05, "讀取名冊…");
+      game.setLoading(0.05, "正在點亮山門");
       await renderer.loadTextures(ASSET_MANIFEST, (n, id) => {
         game.setLoading(0.08 + n * 0.7, `裝載 ${id}`);
       });

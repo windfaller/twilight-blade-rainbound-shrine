@@ -12,17 +12,16 @@ export function MenuScreen({
   return (
     <div className="tb-screen" style={{ justifyContent: "flex-end", padding: "8vh 8vw 10vh" }}>
       <div>
-        <p className="tb-gold" style={{ letterSpacing: "0.4em", marginBottom: 8 }}>
-          TWILIGHT BLADE
-        </p>
-        <h1 className="tb-title" style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)" }}>
+        <p className="tb-reading">TWILIGHT BLADE · RAINBOUND SHRINE</p>
+        <h1 className="tb-masthead" style={{ fontSize: "clamp(3.2rem, 9vw, 6.4rem)" }}>
           暮刃紀行
         </h1>
-        <p style={{ letterSpacing: "0.32em", color: "var(--muted)" }}>雨鎖山門</p>
-        <p style={{ maxWidth: 520, color: "var(--muted)", marginTop: 16 }}>
+        <div className="tb-rule" />
+        <p style={{ letterSpacing: "0.42em", color: "var(--amber)", margin: 0 }}>雨鎖山門</p>
+        <p style={{ maxWidth: 520, color: "var(--muted)", marginTop: 18, lineHeight: 1.75 }}>
           夜雨未歇。守燈人仍守著山門。選一位刃客，走完祭壇、番大將，與雨蝕武者的兩重殘魄。
         </p>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 28 }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 32 }}>
           <button className="tb-btn" onClick={onStart}>
             踏入山門
           </button>

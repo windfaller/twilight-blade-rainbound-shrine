@@ -1,13 +1,18 @@
 :root {
   color-scheme: dark;
-  --navy: #070b14;
-  --navy-2: #10182a;
-  --gold: #e0b45a;
-  --gold-dim: #a9843a;
-  --crimson: #9b2034;
-  --ink: #e8e2d4;
-  --muted: #b7ae9c;
-  --font-ui: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --ink: #070a10;
+  --ink-2: #10161f;
+  --paper: #e8e2d3;
+  --muted: #8b97a6;
+  --amber: #e7b868;
+  --amber-dim: #b8893a;
+  --vermilion: #c43b2a;
+  --spirit: #7eb6d8;
+  --gold: var(--amber);
+  --navy: var(--ink);
+  --navy-2: var(--ink-2);
+  --crimson: var(--vermilion);
+  --font-ui: "Noto Serif TC", "Noto Sans TC", "Songti TC", serif;
   --font-display: "Noto Serif TC", "Songti TC", serif;
   --fs: 16px;
 }
@@ -29,8 +34,8 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--navy);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
   font-family: var(--font-ui);
   font-size: var(--fs);
   touch-action: none;
@@ -66,6 +71,16 @@ canvas {
   inset: 0;
 }
 
+.tb-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 68% 62% at 50% 46%, transparent 38%, rgba(7, 10, 16, 0.62) 100%),
+    linear-gradient(180deg, rgba(7, 10, 16, 0.42) 0%, transparent 16%, transparent 74%, rgba(7, 10, 16, 0.5) 100%);
+}
+
 .tb-ui {
   position: absolute;
   inset: 0;
@@ -87,32 +102,35 @@ canvas {
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(224, 180, 90, 0.16), transparent 50%),
-    linear-gradient(180deg, rgba(7, 11, 20, 0.55), rgba(7, 11, 20, 0.82));
+    radial-gradient(900px 420px at 18% 88%, rgba(231, 184, 104, 0.1), transparent 46%),
+    linear-gradient(180deg, rgba(7, 10, 16, 0.28), rgba(7, 10, 16, 0.62) 70%, rgba(7, 10, 16, 0.78));
 }
 
 .tb-panel {
-  background: linear-gradient(180deg, rgba(16, 24, 42, 0.92), rgba(8, 12, 22, 0.94));
-  border: 1px solid rgba(224, 180, 90, 0.28);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
-  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(16, 22, 31, 0.88), rgba(7, 10, 16, 0.92));
+  border: 1px solid rgba(231, 184, 104, 0.28);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
 }
 
 .tb-btn {
   min-height: 44px;
   min-width: 44px;
-  padding: 0.55rem 1.15rem;
-  border-radius: 6px;
-  border: 1px solid rgba(224, 180, 90, 0.45);
-  background: linear-gradient(180deg, #3a2a14, #21180c);
-  color: var(--gold);
-  letter-spacing: 0.12em;
+  padding: 0.55rem 1.35rem;
+  border: 1px solid rgba(231, 184, 104, 0.55);
+  background:
+    linear-gradient(180deg, rgba(231, 184, 104, 0.22), rgba(70, 42, 16, 0.85)),
+    #2a1c0c;
+  color: var(--amber);
+  letter-spacing: 0.18em;
+  font-family: var(--font-display);
 }
 
 .tb-btn:hover,
 .tb-btn:focus-visible {
-  border-color: var(--gold);
-  background: linear-gradient(180deg, #4a3618, #2a1e0e);
+  border-color: var(--amber);
+  background:
+    linear-gradient(180deg, rgba(231, 184, 104, 0.38), rgba(90, 54, 18, 0.95)),
+    #3a2610;
 }
 
 .tb-btn:disabled {
@@ -121,17 +139,66 @@ canvas {
 }
 
 .tb-btn.ghost {
-  background: rgba(8, 12, 22, 0.55);
-  color: var(--ink);
+  background: rgba(7, 10, 16, 0.35);
+  border-color: rgba(232, 226, 211, 0.28);
+  color: var(--paper);
 }
 
 .tb-title {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   margin: 0;
+  color: var(--paper);
 }
 
-.tb-gold {
-  color: var(--gold);
+.tb-gold,
+.tb-amber {
+  color: var(--amber);
+}
+
+.tb-reading {
+  margin: 0 0 10px;
+  color: var(--amber);
+  letter-spacing: 0.46em;
+  font-size: 0.78rem;
+  font-family: var(--font-display);
+}
+
+.tb-masthead {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.05;
+  margin: 0;
+  color: var(--paper);
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+}
+
+.tb-rule {
+  width: min(220px, 42vw);
+  height: 1px;
+  margin: 16px 0 14px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+}
+
+.tb-ember {
+  width: 13px;
+  height: 13px;
+  margin: 0 auto 22px;
+  background: var(--amber);
+  transform: rotate(45deg);
+  box-shadow:
+    0 0 12px #e7b868,
+    0 0 28px rgba(231, 184, 104, 0.45);
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .mobile-only {
+    display: flex;
+  }
 }
