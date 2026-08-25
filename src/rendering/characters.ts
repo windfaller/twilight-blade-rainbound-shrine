@@ -8,8 +8,24 @@ export interface CharacterView {
   billboard: THREE.Group;
   sprite: THREE.Mesh;
   shadow: THREE.Mesh;
+  rim: THREE.Mesh;
   parts: Record<string, THREE.Object3D>;
   overlays: THREE.Mesh[];
+}
+
+function contactShadowTex(): THREE.CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const g = c.getContext("2d")!;
+  const grd = g.createRadialGradient(64, 64, 8, 64, 64, 60);
+  grd.addColorStop(0, "rgba(0,0,0,0.62)");
+  grd.addColorStop(0.45, "rgba(0,0,0,0.28)");
+  grd.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 128, 128);
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
 }
 
 function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial {
@@ -19,11 +35,11 @@ function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial 
     depthWrite: false,
     side: THREE.DoubleSide,
     opacity,
-    alphaTest: 0.08,
-    roughness: 0.36,
-    metalness: 0.08,
-    emissive: new THREE.Color(0x2a1c14),
-    emissiveIntensity: 0.22,
+    alphaTest: 0.02,
+    roughness: 0.4,
+    metalness: 0.04,
+    emissive: new THREE.Color(0x3a2414),
+    emissiveIntensity: 0.28,
     envMapIntensity: 0,
   });
 }
@@ -80,25 +96,38 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
   blade.scale.setScalar(visH / 1.76);
   weapon.add(blade);
 
+  const rim = new THREE.Mesh(
+    new THREE.PlaneGeometry(w * 1.1, visH * 1.08),
+    new THREE.MeshBasicMaterial({
+      color: 0xffc56a,
+      transparent: true,
+      opacity: 0.12,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    }),
+  );
+  rim.position.set(0, visH * 0.5, -0.03);
+
   torso.add(hair, lArm, rArm, weapon);
-  hip.add(torso, hem, lLeg, rLeg, body);
+  hip.add(torso, hem, lLeg, rLeg, body, rim);
   billboard.add(hip);
   root.add(billboard);
 
   const shadow = new THREE.Mesh(
-    new THREE.CircleGeometry(0.58, 22),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.58, depthWrite: false }),
+    new THREE.CircleGeometry(0.72, 28),
+    new THREE.MeshBasicMaterial({
+      map: contactShadowTex(),
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+    }),
   );
   shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = 0.025;
-  shadow.scale.set(1.15, 0.72, 1);
-  const soft = new THREE.Mesh(
-    new THREE.CircleGeometry(0.95, 22),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false }),
-  );
-  soft.rotation.x = -Math.PI / 2;
-  soft.position.y = 0.018;
-  root.add(shadow, soft);
+  shadow.position.y = 0.02;
+  shadow.scale.set(1.2, 0.78, 1);
+  root.add(shadow);
 
   return {
     id,
@@ -106,12 +135,13 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
     billboard,
     sprite: body,
     shadow,
+    rim,
     parts: { hip, torso, hair, hem, lLeg, rLeg, lArm, rArm, weapon },
     overlays: [],
   };
 }
 
-export function syncCharacterView(view: CharacterView, actor: Actor, alpha: number, cam: THREE.Camera): void {
+export function syncCharacterView(view: CharacterView, actor: Actor, alpha: number, cam: THREE.Camera, warmth = 0): void {
   const x = actor.prevPos.x + (actor.pos.x - actor.prevPos.x) * alpha;
   const y = actor.prevPos.y + (actor.pos.y - actor.prevPos.y) * alpha;
   const z = actor.prevPos.z + (actor.pos.z - actor.prevPos.z) * alpha;
@@ -132,12 +162,17 @@ export function syncCharacterView(view: CharacterView, actor: Actor, alpha: numb
   view.parts.weapon.rotation.z = pose.weapon;
   view.billboard.quaternion.copy(cam.quaternion);
   const s = (actor.height * 1.06) / 1.76;
-  view.shadow.scale.set(1.05 * s + Math.abs(pose.hipY), 0.7 * s, 1);
+  view.shadow.scale.set(1.15 * s + Math.abs(pose.hipY) * 0.4, 0.78 * s, 1);
   const mats = [view.sprite, ...view.overlays].map((m) => m.material as THREE.MeshStandardMaterial);
   const op =
     actor.iFramesUntil > 0 && actor.kind === "player" ? 0.55 + Math.sin(actor.anim.time * 40) * 0.25 : actor.dead ? 0.55 : 1;
   mats[0].opacity = op;
+  mats[0].emissive.setRGB(0.22 + warmth * 0.42, 0.12 + warmth * 0.18, 0.06);
+  mats[0].emissiveIntensity = 0.26 + warmth * 0.7;
   for (let i = 1; i < mats.length; i++) mats[i].opacity = op * 0.68;
+  const rimMat = view.rim.material as THREE.MeshBasicMaterial;
+  rimMat.opacity = (0.1 + warmth * 0.38) * op;
+  rimMat.color.setHex(warmth > 0.2 ? 0xffb45a : 0xc8d4e4);
 }
 
 export function swapTexture(view: CharacterView, tex: THREE.Texture): void {

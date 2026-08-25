@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import { rainStreakCount } from "../rendering/environment";
-import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting } from "../rendering/lighting";
+import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting, lanternWarmth } from "../rendering/lighting";
 import { wetStoneMat } from "../rendering/wetstone";
 
 describe("lighting hotfix", () => {
@@ -26,7 +26,15 @@ describe("lighting hotfix", () => {
   });
 
   it("keeps near-camera rain sparse so it cannot form a wireframe grid", () => {
-    expect(rainStreakCount("med")).toBeLessThanOrEqual(100);
-    expect(rainStreakCount("high")).toBeLessThanOrEqual(160);
+    expect(rainStreakCount("med")).toBeLessThanOrEqual(80);
+    expect(rainStreakCount("high")).toBeLessThanOrEqual(120);
+  });
+
+  it("warms the follow rim when standing next to a lantern", () => {
+    const scene = new THREE.Scene();
+    const rig = createLighting(scene, "med");
+    addLanternLight(scene, rig, 0, 0, 8, "med");
+    expect(lanternWarmth(rig.lanterns, 0, 8)).toBeGreaterThan(0.7);
+    expect(lanternWarmth(rig.lanterns, 20, 40)).toBeLessThan(0.1);
   });
 });

@@ -35,16 +35,25 @@ export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
   }
   scene.add(moon);
   scene.add(moon.target);
-  const followRim = new THREE.PointLight(0xffc56a, 2.8, 7.2, 1.6);
+  const followRim = new THREE.PointLight(0xffc56a, 2.6, 5.6, 1.35);
   followRim.position.set(1.4, 1.8, 8.2);
   scene.add(followRim);
   return { moon, fill: hemi, ambient, lanterns: [], followRim };
 }
 
+export function lanternWarmth(lanterns: THREE.PointLight[], x: number, z: number): number {
+  let best = 0;
+  for (const light of lanterns) {
+    const d = Math.hypot(light.position.x - x, light.position.z - z);
+    best = Math.max(best, Math.max(0, 1 - d / 5.4));
+  }
+  return best;
+}
+
 export function addLanternLight(scene: THREE.Scene, rig: LightRig, x: number, y: number, z: number, quality: Quality): void {
   if (rig.lanterns.length >= MAX_LANTERN_LIGHTS) return;
-  const intensity = quality === "low" ? 3.2 : 3.8;
-  const light = new THREE.PointLight(0xffb45a, intensity, 12.5, 1.08);
+  const intensity = quality === "low" ? 3.6 : 4.8;
+  const light = new THREE.PointLight(0xff9a3c, intensity, 11.2, 1.12);
   light.position.set(x, y + 1.28, z);
   light.castShadow = false;
   scene.add(light);

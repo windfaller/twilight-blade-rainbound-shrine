@@ -13,7 +13,7 @@ import { makeCharacterView, syncCharacterView, swapTexture, type CharacterView }
 import { cameraYaw, createGameCamera, syncCamera } from "./camera";
 import { cutoutSpriteTexture } from "./cutout";
 import { buildEnvironment, stepAtmosphere, type EnvHandles } from "./environment";
-import { applyQuality, bakeNightEnv, createLighting } from "./lighting";
+import { applyQuality, bakeNightEnv, createLighting, lanternWarmth } from "./lighting";
 import { VfxWorld } from "./vfx";
 
 export class WorldRenderer {
@@ -28,6 +28,7 @@ export class WorldRenderer {
   private seenVfx = new Set<string>();
   private fadeMats: THREE.Mesh[] = [];
   private followRim: THREE.PointLight | null = null;
+  private lanterns: THREE.PointLight[] = [];
   private composerFailed = false;
   private frames = 0;
 
@@ -73,6 +74,7 @@ export class WorldRenderer {
     for (const [k, v] of this.textures) tex[k] = v;
     const lights = createLighting(this.scene, quality);
     this.followRim = lights.followRim;
+    this.lanterns = lights.lanterns;
     this.env = buildEnvironment(this.scene, tex, lights, quality);
     bakeNightEnv(this.renderer, this.scene);
     applyQuality(this.renderer, quality);
@@ -129,17 +131,22 @@ export class WorldRenderer {
 
   sync(game: Game, alpha: number, dt: number): { fps: number; draws: number } {
     const st = game.state;
+    const px = lerp(st.player.prevPos.x, st.player.pos.x, alpha);
+    const py = lerp(st.player.prevPos.y, st.player.pos.y, alpha);
+    const pz = lerp(st.player.prevPos.z, st.player.pos.z, alpha);
+    const warmth = lanternWarmth(this.lanterns, px, pz);
     if (this.env) {
-      stepAtmosphere(this.env, dt, st.bossPhase >= 2);
+      stepAtmosphere(this.env, dt, st.bossPhase >= 2, { x: px, z: pz });
       this.env.gateBar.visible = !st.gateOpen;
       this.env.crater.visible = st.arenaBroken;
     }
+
     const all = [st.player, ...st.actors];
     const live = new Set(all.map((a) => a.id));
     for (const a of all) {
       const view = this.ensureActor(a);
       if (a.defId === "boss" && a.phase >= 2) swapTexture(view, this.textures.get("boss2")!);
-      syncCharacterView(view, a, alpha, this.camera);
+      syncCharacterView(view, a, alpha, this.camera, a.kind === "player" ? warmth : 0.12);
     }
     for (const [id, view] of this.views) {
       if (!live.has(id)) {
@@ -155,10 +162,11 @@ export class WorldRenderer {
     this.vfx.syncTelegraphs(st.actors);
     this.vfx.update(dt);
 
-    const px = lerp(st.player.prevPos.x, st.player.pos.x, alpha);
-    const py = lerp(st.player.prevPos.y, st.player.pos.y, alpha);
-    const pz = lerp(st.player.prevPos.z, st.player.pos.z, alpha);
-    if (this.followRim) this.followRim.position.set(px + 1.15, py + 1.65, pz + 0.35);
+    if (this.followRim) {
+      this.followRim.position.set(px - 0.2, py + 1.38, pz + 0.55);
+      this.followRim.intensity = 2.4 + warmth * 4.1;
+      this.followRim.color.setHex(warmth > 0.18 ? 0xffb056 : 0xd2c4a4);
+    }
     syncCamera(this.camera, st.camera, { x: px, y: py, z: pz }, this.renderer.domElement.clientWidth / Math.max(1, this.renderer.domElement.clientHeight));
 
     this.fadeOccluders(new THREE.Vector3(px, py + 1.1, pz));

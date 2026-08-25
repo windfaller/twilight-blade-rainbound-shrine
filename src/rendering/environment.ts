@@ -43,6 +43,7 @@ export function buildEnvironment(
   scene.add(sky);
 
   addGroundStrip(scene, wet, -7.4, 7.4, 3.4, 10.2, 0, 0x7a828c, 16);
+  addFlagstoneLift(scene, wet);
   addStairs(scene, wet, 8, 24);
   addGroundStrip(scene, wet, -6.5, 6.5, 24, 30, 5, 0x7a828c, 14);
   addGroundStrip(scene, wet, -8, 8.5, 29.5, 41, 5, 0x7a828c, 14);
@@ -274,13 +275,14 @@ function addLantern(
   }
   const paper = new THREE.MeshStandardMaterial({
     color: 0xffe2a8,
-    emissive: 0xffb45a,
-    emissiveIntensity: 1.55,
-    roughness: 0.48,
+    emissive: 0xff9a3c,
+    emissiveIntensity: 2.15,
+    roughness: 0.42,
     metalness: 0,
     transparent: true,
-    opacity: 0.92,
+    opacity: 0.94,
     side: THREE.DoubleSide,
+    envMapIntensity: 0,
   });
   for (let i = 0; i < 4; i++) {
     const pane = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.3), paper);
@@ -289,28 +291,62 @@ function addLantern(
     pane.rotation.y = ang;
     g.add(pane);
   }
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.2, 4), stone);
-  roof.position.y = 1.44;
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(0.38, 0.22, 6), stone);
+  roof.position.y = 1.46;
   roof.rotation.y = Math.PI / 4;
+  const halo = lanternGlowTex();
   const glow = new THREE.Sprite(
     new THREE.SpriteMaterial({
-      map: lanternGlowTex(),
-      color: 0xffc27a,
+      map: halo,
+      color: 0xffb056,
       transparent: true,
-      opacity: 0.42,
+      opacity: 0.9,
       depthWrite: false,
+      blending: THREE.AdditiveBlending,
       fog: true,
     }),
   );
   glow.position.y = 1.16;
-  glow.scale.set(2.6, 2.6, 1);
-  const moss = new THREE.Mesh(
-    new THREE.SphereGeometry(0.11, 6, 6),
-    new THREE.MeshStandardMaterial({ color: 0x2f4a32, roughness: 0.95 }),
+  glow.scale.set(3.5, 3.5, 1);
+  const glowSoft = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: halo,
+      color: 0xff7a28,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: true,
+    }),
   );
-  moss.position.set(0.18, 0.22, 0.1);
-  moss.scale.set(1.4, 0.42, 1.1);
-  g.add(roof, glow, moss);
+  glowSoft.position.y = 1.1;
+  glowSoft.scale.set(5.2, 4.4, 1);
+  const pool = new THREE.Mesh(
+    new THREE.CircleGeometry(1.7, 28),
+    new THREE.MeshBasicMaterial({
+      map: halo,
+      color: 0xff8a32,
+      transparent: true,
+      opacity: 0.34,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    }),
+  );
+  pool.rotation.x = -Math.PI / 2;
+  pool.position.y = 0.035;
+  const mossMat = new THREE.MeshStandardMaterial({ color: 0x2a4630, roughness: 0.95, envMapIntensity: 0 });
+  for (const [mx, my, mz, sx, sy] of [
+    [0.2, 0.22, 0.1, 1.5, 0.4],
+    [-0.16, 0.18, 0.14, 1.1, 0.32],
+    [0.08, 0.96, -0.12, 0.9, 0.22],
+    [-0.22, 0.52, -0.06, 0.7, 0.28],
+  ] as const) {
+    const moss = new THREE.Mesh(new THREE.SphereGeometry(0.11, 7, 6), mossMat);
+    moss.position.set(mx, my, mz);
+    moss.scale.set(sx, sy, 1.05);
+    g.add(moss);
+  }
+  g.add(roof, glow, glowSoft, pool);
   g.position.set(x, y, z);
   g.scale.setScalar(scale);
   g.traverse((o) => {
@@ -320,6 +356,40 @@ function addLantern(
     }
   });
   scene.add(g);
+}
+
+function addFlagstoneLift(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>): void {
+  for (const [x, z, w, d, lift] of [
+    [-1.8, 6.4, 1.7, 1.35, 0.045],
+    [1.6, 7.8, 1.55, 1.2, 0.035],
+    [0.15, 5.6, 1.4, 1.05, 0.028],
+  ] as const) {
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(w, 0.08, d), wetStoneMat(wet, 0.22, 0.18, 0x88909a));
+    slab.position.set(x, lift, z);
+    slab.receiveShadow = true;
+    scene.add(slab);
+  }
+}
+
+function addPine(scene: THREE.Scene, x: number, y: number, z: number, scale: number): void {
+  const pine = new THREE.Group();
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.18, 0.26, 3.8, 6),
+    new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.86, envMapIntensity: 0 }),
+  );
+  trunk.position.y = 1.9;
+  pine.add(trunk);
+  for (let i = 0; i < 4; i++) {
+    const needle = new THREE.Mesh(
+      new THREE.ConeGeometry(1.05 - i * 0.14, 1.55, 7),
+      new THREE.MeshStandardMaterial({ color: 0x16301c, roughness: 0.78, envMapIntensity: 0 }),
+    );
+    needle.position.y = 2.1 + i * 0.78;
+    pine.add(needle);
+  }
+  pine.position.set(x, y, z);
+  pine.scale.setScalar(scale);
+  scene.add(pine);
 }
 
 function addForegroundOccluders(
@@ -349,6 +419,9 @@ function addForegroundOccluders(
     if (o instanceof THREE.Mesh) o.castShadow = true;
   });
   scene.add(pine);
+  addPine(scene, 6.8, 0, 6.4, 0.82);
+  addPine(scene, -8.2, 2.4, 18.5, 1.15);
+  addPine(scene, 7.6, 4.4, 26.2, 1.05);
   for (const [x, z] of [
     [-4.4, 3.9],
     [-3.2, 3.55],
@@ -456,45 +529,52 @@ function addPuddles(scene: THREE.Scene): void {
 }
 
 export function rainStreakCount(quality: Quality): number {
-  return quality === "high" ? 140 : quality === "med" ? 90 : 48;
+  return quality === "high" ? 110 : quality === "med" ? 72 : 40;
 }
+
+const RAIN_DX = 1.55;
+const RAIN_DZ = 0.42;
 
 function makeRain(quality: Quality): THREE.LineSegments {
   const n = rainStreakCount(quality);
   const pos = new Float32Array(n * 6);
   for (let i = 0; i < n; i++) {
-    const x = (Math.random() - 0.5) * 12;
-    const y = 1.2 + Math.random() * 9;
-    const z = 3.4 + Math.random() * 16;
-    const len = 3.4 + Math.random() * 1.8;
+    const x = (Math.random() - 0.5) * 10;
+    const y = 1.4 + Math.random() * 8;
+    const z = 4 + Math.random() * 10;
+    const len = 3.8 + Math.random() * 1.6;
     const i6 = i * 6;
     pos[i6] = x;
     pos[i6 + 1] = y;
     pos[i6 + 2] = z;
-    pos[i6 + 3] = x + 1.15;
+    pos[i6 + 3] = x + RAIN_DX;
     pos[i6 + 4] = y - len;
-    pos[i6 + 5] = z + 0.35;
+    pos[i6 + 5] = z + RAIN_DZ;
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   return new THREE.LineSegments(
     geo,
-    new THREE.LineBasicMaterial({ color: 0xb8c8da, transparent: true, opacity: 0.16 }),
+    new THREE.LineBasicMaterial({ color: 0xd0dcea, transparent: true, opacity: 0.14 }),
   );
 }
 
+let cachedHalo: THREE.CanvasTexture | null = null;
+
 function lanternGlowTex(): THREE.CanvasTexture {
+  if (cachedHalo) return cachedHalo;
   const c = document.createElement("canvas");
   c.width = c.height = 128;
   const g = c.getContext("2d")!;
   const grd = g.createRadialGradient(64, 64, 4, 64, 64, 62);
-  grd.addColorStop(0, "rgba(255, 210, 140, 0.55)");
-  grd.addColorStop(0.35, "rgba(255, 176, 90, 0.18)");
-  grd.addColorStop(1, "rgba(255, 176, 90, 0)");
+  grd.addColorStop(0, "rgba(255, 210, 140, 0.7)");
+  grd.addColorStop(0.32, "rgba(255, 160, 70, 0.22)");
+  grd.addColorStop(1, "rgba(255, 140, 50, 0)");
   g.fillStyle = grd;
   g.fillRect(0, 0, 128, 128);
   const tex = new THREE.CanvasTexture(c);
   tex.needsUpdate = true;
+  cachedHalo = tex;
   return tex;
 }
 
@@ -540,18 +620,29 @@ function makeMapleFall(quality: Quality): THREE.Points {
   return new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xc43b2a, size: 0.12, transparent: true, opacity: 0.8 }));
 }
 
-export function stepAtmosphere(env: EnvHandles, dt: number, heavy: boolean): void {
+export function stepAtmosphere(env: EnvHandles, dt: number, heavy: boolean, around?: { x: number; z: number }): void {
   const rain = env.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
-  const fall = heavy ? 22 : 15;
+  const fall = heavy ? 32 : 24;
+  const wind = fall * 0.38;
+  const ox = around?.x ?? 0;
+  const oz = around?.z ?? 8;
   for (let i = 0; i < rain.count; i += 2) {
     let y0 = rain.getY(i) - dt * fall;
     let y1 = rain.getY(i + 1) - dt * fall;
+    let x0 = rain.getX(i) + dt * wind;
+    let x1 = rain.getX(i + 1) + dt * wind;
     if (y0 < 0) {
       const drop = rain.getY(i) - rain.getY(i + 1);
-      const ny = 8 + Math.random() * 4;
+      const ny = 7 + Math.random() * 5;
+      x0 = ox + (Math.random() - 0.5) * 10;
+      x1 = x0 + RAIN_DX;
+      rain.setZ(i, oz + Math.random() * 9 - 1.2);
+      rain.setZ(i + 1, rain.getZ(i) + RAIN_DZ);
       y0 = ny;
       y1 = ny - drop;
     }
+    rain.setX(i, x0);
+    rain.setX(i + 1, x1);
     rain.setY(i, y0);
     rain.setY(i + 1, y1);
   }
