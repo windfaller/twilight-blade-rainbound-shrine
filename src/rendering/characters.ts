@@ -34,7 +34,7 @@ function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial 
     depthWrite: false,
     side: THREE.DoubleSide,
     opacity,
-    alphaTest: 0.16,
+    alphaTest: 0.18,
     roughness: 0.46,
     metalness: 0.03,
     emissive: new THREE.Color(0x14100c),
