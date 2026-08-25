@@ -29,7 +29,7 @@ export function Hud({
           <div style={{ fontFamily: "var(--font-display)" }}>{kit.name}</div>
           <Bar value={hp} color="#9b2034" />
           <Bar value={sp} color="#5aa7e0" />
-          {snap.player.shield > 0 && <div style={{ color: "var(--gold)", fontSize: 14 }}>護盾 {Math.round(snap.player.shield)}</div>}
+          {snap.player.shield > 0 && <div style={{ color: "var(--gold)" }}>護盾 {Math.round(snap.player.shield)}</div>}
         </div>
       </div>
       {snap.boss && (
@@ -57,7 +57,7 @@ export function Hud({
         {snap.skills.map((s, i) => (
           <button key={s.name} className="tb-btn" disabled={s.cd > 0} onClick={() => onSkill(i as 0 | 1 | 2)} style={{ minWidth: 72 }}>
             {["Q", "R", "F"][i]}
-            <div style={{ fontSize: 13 }}>{s.name}</div>
+            <div>{s.name}</div>
             {s.cd > 0 && <div>{s.cd.toFixed(1)}</div>}
           </button>
         ))}
