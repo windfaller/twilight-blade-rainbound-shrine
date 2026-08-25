@@ -11,6 +11,7 @@ import { lerp, lerpAngle } from "../game/math";
 import type { Actor, CharacterId, EnemyId, Quality } from "../game/types";
 import { makeCharacterView, syncCharacterView, swapTexture, type CharacterView } from "./characters";
 import { cameraYaw, createGameCamera, syncCamera } from "./camera";
+import { cutoutSpriteTexture } from "./cutout";
 import { buildEnvironment, stepAtmosphere, type EnvHandles } from "./environment";
 import { applyQuality, createLighting } from "./lighting";
 import { VfxWorld } from "./vfx";
@@ -36,9 +37,9 @@ export class WorldRenderer {
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.92;
+    this.renderer.toneMappingExposure = 1.08;
     this.renderer.shadowMap.enabled = true;
-    this.scene.background = new THREE.Color(0x070a10);
+    this.scene.background = new THREE.Color(0x0c121c);
     this.scene.add(this.vfx.root);
   }
 
@@ -46,7 +47,7 @@ export class WorldRenderer {
     const loader = new THREE.TextureLoader();
     let done = 0;
     for (const e of entries) {
-      const tex = await new Promise<THREE.Texture>((resolve, reject) => {
+      let tex = await new Promise<THREE.Texture>((resolve, reject) => {
         loader.load(
           e.url,
           (t) => resolve(t),
@@ -55,6 +56,9 @@ export class WorldRenderer {
         );
       });
       tex.colorSpace = THREE.SRGBColorSpace;
+      if (e.id !== "farscape" && !e.id.startsWith("tex-")) {
+        tex = cutoutSpriteTexture(tex);
+      }
       this.textures.set(e.id, tex);
       done += 1;
       onProg(done / entries.length, e.id);
@@ -80,7 +84,7 @@ export class WorldRenderer {
     }
     const composer = new EffectComposer(this.renderer);
     composer.addPass(new RenderPass(this.scene, this.camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.3 : 0.18, 0.42, 0.86);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.26 : 0.16, 0.38, 0.84);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
     this.composer = composer;

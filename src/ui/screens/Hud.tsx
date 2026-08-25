@@ -23,77 +23,61 @@ export function Hud({
   const sp = snap.player.spirit / snap.player.maxSpirit;
   return (
     <div className="pass-through" style={{ position: "absolute", inset: 0 }}>
-      <div style={{ position: "absolute", left: 16, top: 14, display: "flex", gap: 10, alignItems: "center", pointerEvents: "auto" }}>
-        <img src={kit.artPortrait} alt={kit.name} width={56} height={56} style={{ border: "1px solid var(--amber)", objectFit: "cover" }} />
+      <div className="tb-hud-vitals">
+        <img src={kit.artPortrait} alt={kit.name} width={56} height={56} />
         <div style={{ minWidth: 220 }}>
-          <div style={{ fontFamily: "var(--font-display)", letterSpacing: "0.18em" }}>{kit.name}</div>
+          <div className="tb-hud-name">{kit.name}</div>
           <Bar value={hp} color="#c43b2a" />
           <Bar value={sp} color="#7eb6d8" />
-          {snap.player.shield > 0 && <div style={{ color: "var(--amber)" }}>護盾 {Math.round(snap.player.shield)}</div>}
+          {snap.player.shield > 0 && <div className="tb-gold">護盾 {Math.round(snap.player.shield)}</div>}
         </div>
       </div>
       {snap.boss && (
-        <div style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", width: "min(520px, 80vw)", pointerEvents: "none" }}>
-          <div style={{ textAlign: "center", letterSpacing: "0.2em" }}>{snap.boss.name} · 第{snap.boss.phase}相</div>
+        <div className="tb-hud-boss">
+          <div className="tb-hud-name" style={{ textAlign: "center" }}>
+            {snap.boss.name} · 第{snap.boss.phase}相
+          </div>
           <Bar value={snap.boss.hp / snap.boss.maxHp} color="#3aa7d8" />
         </div>
       )}
-      <button
-        className="tb-btn"
-        onClick={onGoObjective}
-        style={{ position: "absolute", top: 52, left: "50%", transform: "translateX(-50%)", letterSpacing: "0.12em" }}
-      >
+      <button className="tb-hud-obj" onClick={onGoObjective}>
         {snap.objective}
       </button>
-      {snap.encounterName && !snap.boss && (
-        <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", color: "var(--amber)", pointerEvents: "none" }}>
-          {snap.encounterName}
-        </div>
-      )}
-      <button className="tb-btn ghost" style={{ position: "absolute", right: 16, top: 14 }} onClick={onPause}>
+      {snap.encounterName && !snap.boss && <div className="tb-hud-enc">{snap.encounterName}</div>}
+      <button className="tb-btn ghost tb-hud-pause" onClick={onPause}>
         暫停
       </button>
-      <div style={{ position: "absolute", right: 16, bottom: 18, display: "flex", gap: 8, pointerEvents: "auto" }}>
+      <div className="tb-hud-skills">
         {snap.skills.map((s, i) => (
-          <button key={s.name} className="tb-btn" disabled={s.cd > 0} onClick={() => onSkill(i as 0 | 1 | 2)} style={{ minWidth: 72 }}>
-            {["Q", "R", "F"][i]}
-            <div>{s.name}</div>
-            {s.cd > 0 && <div>{s.cd.toFixed(1)}</div>}
+          <button key={s.name} className="tb-hud-skill" disabled={s.cd > 0} onClick={() => onSkill(i as 0 | 1 | 2)}>
+            <span className="tb-hud-key">{["Q", "R", "F"][i]}</span>
+            <span>{s.name}</span>
+            {s.cd > 0 && <span className="tb-hud-cd">{s.cd.toFixed(1)}</span>}
           </button>
         ))}
       </div>
-      <div className="mobile-only" style={{ position: "absolute", left: 18, bottom: 18, gap: 8, pointerEvents: "auto" }}>
-        <button className="tb-btn" onClick={onAttack} style={{ minWidth: 64 }}>
+      <div className="mobile-only tb-hud-mobile">
+        <button className="tb-hud-skill" onClick={onAttack}>
           攻擊
         </button>
-        <button className="tb-btn" onClick={onDodge} style={{ minWidth: 64 }}>
+        <button className="tb-hud-skill" onClick={onDodge}>
           迴避
         </button>
         {snap.interactInRange && (
-          <button className="tb-btn" onClick={onInteract}>
+          <button className="tb-hud-skill" onClick={onInteract}>
             交談
           </button>
         )}
       </div>
       {snap.prompt && (
-        <button
-          className="tb-btn"
-          onClick={onInteract}
-          style={{ position: "absolute", left: "50%", bottom: 92, transform: "translateX(-50%)" }}
-        >
+        <button className="tb-hud-obj tb-hud-prompt" onClick={onInteract}>
           {snap.prompt.text}
         </button>
       )}
       {snap.ultCutIn > 0 && (
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.25)", pointerEvents: "none" }}>
-          <img
-            src={kit.artPortrait}
-            alt=""
-            style={{ position: "absolute", left: 0, bottom: 0, height: "46%", opacity: 0.92, objectFit: "cover" }}
-          />
-          <div className="tb-title" style={{ position: "absolute", left: 24, bottom: 36, fontSize: 28 }}>
-            {kit.skills[2].name}
-          </div>
+        <div className="tb-hud-cutin">
+          <img src={kit.artPortrait} alt="" />
+          <div className="tb-title tb-hud-cutin-name">{kit.skills[2].name}</div>
         </div>
       )}
     </div>
@@ -102,7 +86,7 @@ export function Hud({
 
 function Bar({ value, color }: { value: number; color: string }) {
   return (
-    <div style={{ height: 8, background: "#151b24", overflow: "hidden", marginTop: 4, border: "1px solid rgba(231,184,104,0.2)" }}>
+    <div className="tb-hud-bar">
       <div style={{ width: `${Math.round(Math.max(0, Math.min(1, value)) * 100)}%`, height: "100%", background: color }} />
     </div>
   );

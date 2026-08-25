@@ -19,12 +19,12 @@ function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial 
     depthWrite: false,
     side: THREE.DoubleSide,
     opacity,
-    alphaTest: 0.06,
-    roughness: 0.42,
-    metalness: 0.06,
-    emissive: new THREE.Color(0x4a2e14),
-    emissiveIntensity: 0.32,
-    envMapIntensity: 0.7,
+    alphaTest: 0.08,
+    roughness: 0.36,
+    metalness: 0.08,
+    emissive: new THREE.Color(0x3a2412),
+    emissiveIntensity: 0.2,
+    envMapIntensity: 0.85,
   });
 }
 
@@ -60,22 +60,24 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
   root.name = id;
   const billboard = new THREE.Group();
   billboard.name = "billboard";
-  const aspect = 0.62;
-  const w = height * aspect;
-  const body = new THREE.Mesh(new THREE.PlaneGeometry(w, height, 6, 10), litSprite(tex));
-  body.position.y = height * 0.5;
+  const visH = height * 1.32;
+  const img = tex.image as { width?: number; height?: number } | undefined;
+  const aspect = img?.width && img?.height ? Math.min(0.72, Math.max(0.42, img.width / img.height)) : 0.52;
+  const w = visH * aspect;
+  const body = new THREE.Mesh(new THREE.PlaneGeometry(w, visH, 6, 10), litSprite(tex));
+  body.position.y = visH * 0.5;
   body.castShadow = true;
 
   const hair = new THREE.Group();
   hair.name = "hair";
-  const hairMesh = new THREE.Mesh(uvPlane(w * 0.9, height * 0.4, 0.12, 0.62, 0.88, 1), litSprite(tex, 0.92));
-  hairMesh.position.set(0, height * 0.78, 0.04);
+  const hairMesh = new THREE.Mesh(uvPlane(w * 0.72, visH * 0.28, 0.22, 0.7, 0.78, 1), litSprite(tex, 0.7));
+  hairMesh.position.set(0, visH * 0.82, 0.03);
   hair.add(hairMesh);
 
   const hem = new THREE.Group();
   hem.name = "hem";
-  const hemMesh = new THREE.Mesh(uvPlane(w * 1.02, height * 0.34, 0.08, 0, 0.92, 0.34), litSprite(tex, 0.88));
-  hemMesh.position.set(0, height * 0.2, 0.035);
+  const hemMesh = new THREE.Mesh(uvPlane(w * 0.86, visH * 0.24, 0.18, 0.02, 0.82, 0.28), litSprite(tex, 0.62));
+  hemMesh.position.set(0, visH * 0.18, 0.028);
   hem.add(hemMesh);
 
   const hip = new THREE.Group();
@@ -83,32 +85,32 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
   const torso = new THREE.Group();
   torso.name = "torso";
   const lLeg = new THREE.Group();
-  lLeg.position.set(-0.1, height * 0.18, 0.02);
+  lLeg.position.set(-0.1, visH * 0.16, 0.02);
   const rLeg = new THREE.Group();
-  rLeg.position.set(0.1, height * 0.18, 0.02);
+  rLeg.position.set(0.1, visH * 0.16, 0.02);
   const lArm = new THREE.Group();
-  lArm.position.set(-w * 0.22, height * 0.58, 0.03);
+  lArm.position.set(-w * 0.2, visH * 0.56, 0.03);
   const rArm = new THREE.Group();
-  rArm.position.set(w * 0.22, height * 0.58, 0.03);
+  rArm.position.set(w * 0.2, visH * 0.56, 0.03);
   const weapon = new THREE.Group();
-  weapon.position.set(w * 0.18, height * 0.48, 0.07);
+  weapon.position.set(w * 0.16, visH * 0.46, 0.07);
   const blade = bladeMesh();
-  blade.scale.setScalar(height / 1.76);
+  blade.scale.setScalar(visH / 1.76);
   weapon.add(blade);
 
   const clothHint = new THREE.Mesh(
-    new THREE.PlaneGeometry(w * 0.34, height * 0.22),
+    new THREE.PlaneGeometry(w * 0.28, visH * 0.18),
     new THREE.MeshStandardMaterial({
       color: 0x8a2030,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.16,
       roughness: 0.55,
       metalness: 0.04,
       side: THREE.DoubleSide,
       depthWrite: false,
     }),
   );
-  clothHint.position.set(0.02, height * 0.32, 0.05);
+  clothHint.position.set(0.02, visH * 0.3, 0.04);
   hem.add(clothHint);
 
   torso.add(hair, lArm, rArm, weapon);
@@ -117,12 +119,19 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
   root.add(billboard);
 
   const shadow = new THREE.Mesh(
-    new THREE.CircleGeometry(0.42, 20),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.42, depthWrite: false }),
+    new THREE.CircleGeometry(0.58, 22),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.58, depthWrite: false }),
   );
   shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = 0.02;
-  root.add(shadow);
+  shadow.position.y = 0.025;
+  shadow.scale.set(1.15, 0.72, 1);
+  const soft = new THREE.Mesh(
+    new THREE.CircleGeometry(0.95, 22),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false }),
+  );
+  soft.rotation.x = -Math.PI / 2;
+  soft.position.y = 0.018;
+  root.add(shadow, soft);
 
   return {
     id,
@@ -155,12 +164,13 @@ export function syncCharacterView(view: CharacterView, actor: Actor, alpha: numb
   view.parts.rArm.rotation.x = pose.rArm;
   view.parts.weapon.rotation.z = pose.weapon;
   view.billboard.quaternion.copy(cam.quaternion);
-  const s = actor.height / 1.76;
-  view.shadow.scale.setScalar(0.85 * s + Math.abs(pose.hipY));
+  const s = (actor.height * 1.32) / 1.76;
+  view.shadow.scale.set(1.05 * s + Math.abs(pose.hipY), 0.7 * s, 1);
   const mats = [view.sprite, ...view.overlays].map((m) => m.material as THREE.MeshStandardMaterial);
   const op =
     actor.iFramesUntil > 0 && actor.kind === "player" ? 0.55 + Math.sin(actor.anim.time * 40) * 0.25 : actor.dead ? 0.55 : 1;
-  for (const mat of mats) mat.opacity = op;
+  mats[0].opacity = op;
+  for (let i = 1; i < mats.length; i++) mats[i].opacity = op * 0.68;
 }
 
 export function swapTexture(view: CharacterView, tex: THREE.Texture): void {

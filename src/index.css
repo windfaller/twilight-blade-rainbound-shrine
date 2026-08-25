@@ -193,6 +193,160 @@ canvas {
     0 0 28px rgba(231, 184, 104, 0.45);
 }
 
+.tb-hud-vitals {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.tb-hud-vitals img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 1px solid rgba(231, 184, 104, 0.7);
+  box-shadow: 0 0 0 1px rgba(7, 10, 16, 0.7);
+}
+
+.tb-hud-name {
+  font-family: var(--font-display);
+  letter-spacing: 0.22em;
+  font-size: 0.95rem;
+}
+
+.tb-hud-bar {
+  height: 6px;
+  margin-top: 5px;
+  background: rgba(7, 10, 16, 0.55);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(231, 184, 104, 0.28);
+}
+
+.tb-hud-boss {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, 80vw);
+  pointer-events: none;
+}
+
+.tb-hud-obj {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-height: 44px;
+  padding: 0.4rem 1.2rem;
+  border: 0;
+  border-bottom: 1px solid rgba(231, 184, 104, 0.55);
+  background: transparent;
+  color: var(--paper);
+  letter-spacing: 0.16em;
+  font-family: var(--font-display);
+}
+
+.tb-hud-obj:hover,
+.tb-hud-obj:focus-visible {
+  color: var(--amber);
+}
+
+.tb-hud-enc {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--amber);
+  pointer-events: none;
+  letter-spacing: 0.2em;
+}
+
+.tb-hud-pause {
+  position: absolute;
+  right: 16px;
+  top: 14px;
+}
+
+.tb-hud-skills {
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.tb-hud-skill {
+  min-height: 44px;
+  min-width: 72px;
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  border-bottom: 1px solid rgba(231, 184, 104, 0.45);
+  background: linear-gradient(180deg, rgba(7, 10, 16, 0.15), rgba(7, 10, 16, 0.42));
+  color: var(--paper);
+  letter-spacing: 0.12em;
+  font-family: var(--font-display);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.tb-hud-skill:disabled {
+  opacity: 0.45;
+}
+
+.tb-hud-key {
+  color: var(--amber);
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+}
+
+.tb-hud-cd {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.tb-hud-mobile {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.tb-hud-prompt {
+  top: auto;
+  bottom: 92px;
+}
+
+.tb-hud-cutin {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(7, 10, 16, 0.45), transparent 46%);
+  pointer-events: none;
+}
+
+.tb-hud-cutin img {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 46%;
+  opacity: 0.92;
+  object-fit: cover;
+  mask-image: linear-gradient(90deg, #000 58%, transparent);
+}
+
+.tb-hud-cutin-name {
+  position: absolute;
+  left: 24px;
+  bottom: 36px;
+  font-size: 28px;
+}
+
 .mobile-only {
   display: none;
 }
