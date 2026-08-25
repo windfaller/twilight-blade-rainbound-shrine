@@ -1,11 +1,11 @@
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting } from "../rendering/lighting";
 import { rainStreakCount } from "../rendering/environment";
+import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting } from "../rendering/lighting";
 import { wetStoneMat } from "../rendering/wetstone";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
 
 describe("lighting hotfix", () => {
   it("caps lantern point lights and always keeps hemi + ambient", () => {
