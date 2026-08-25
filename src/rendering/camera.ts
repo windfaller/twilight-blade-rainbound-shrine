@@ -18,7 +18,7 @@ export function syncCamera(
 ): void {
   cam.aspect = aspect;
   cam.updateProjectionMatrix();
-  const yaw = Math.PI * 0.25 + sim.yawOffset;
+  const yaw = Math.PI * 1.25 + sim.yawOffset;
   const dist = sim.zoom;
   const shakeX = (Math.random() - 0.5) * sim.shake;
   const shakeZ = (Math.random() - 0.5) * sim.shake;
@@ -33,5 +33,5 @@ export function syncCamera(
 }
 
 export function cameraYaw(sim: CameraSim): number {
-  return Math.PI * 0.25 + sim.yawOffset;
+  return Math.PI * 1.25 + sim.yawOffset;
 }

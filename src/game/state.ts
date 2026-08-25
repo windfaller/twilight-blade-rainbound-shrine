@@ -99,7 +99,7 @@ export function createSimState(): SimState {
     actors: [makeKeeper()],
     projectiles: [],
     pulses: [],
-    camera: { yawOffset: 0, yawReturn: 0, zoom: 14, shake: 0, lookX: SPAWN.x, lookZ: SPAWN.z },
+    camera: { yawOffset: 0, yawReturn: 0, zoom: 16.5, shake: 0, lookX: SPAWN.x, lookZ: SPAWN.z },
     path: { waypoints: [], index: 0 },
     combatLog: [],
     vfx: [],
@@ -197,7 +197,19 @@ export function toSnapshot(state: SimState): UiSnapshot {
     runTime: state.runTime,
     ultCutIn: state.ultCutIn,
     interactInRange: false,
+    objective: objectiveText(state),
   };
+}
+
+function objectiveText(state: SimState): string {
+  if (!state.blessing) return "沿金燈上山，與守燈人交談";
+  if (!state.encountersCleared.includes("enc1")) return "越過斷橋，前往森林祭壇";
+  if (!state.encountersCleared.includes("enc2")) return "繼續深入祭壇第二陣";
+  if (!state.encountersCleared.includes("enc3")) return "擊敗青燐犬與符陣祭師";
+  if (!state.encountersCleared.includes("elite")) return "前往黑金番大將演武場";
+  if (!state.gateOpen) return "等待封印開啟";
+  if (!state.encountersCleared.includes("boss")) return "踏入深處，討伐雨蝕武者";
+  return "山門暫解";
 }
 
 function labelEncounter(id: string): string {

@@ -458,4 +458,5 @@ export interface UiSnapshot {
   runTime: number;
   ultCutIn: number;
   interactInRange: boolean;
+  objective: string;
 }

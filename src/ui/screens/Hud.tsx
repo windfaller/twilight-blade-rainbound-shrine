@@ -36,6 +36,11 @@ export function Hud({
           <Bar value={snap.boss.hp / snap.boss.maxHp} color="#3aa7d8" />
         </div>
       )}
+      <div style={{ position: "absolute", top: 52, left: "50%", transform: "translateX(-50%)", pointerEvents: "none", textAlign: "center" }}>
+        <div className="tb-gold" style={{ letterSpacing: "0.16em" }}>
+          {snap.objective}
+        </div>
+      </div>
       {snap.encounterName && !snap.boss && (
         <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", color: "var(--gold)", pointerEvents: "none" }}>
           {snap.encounterName}

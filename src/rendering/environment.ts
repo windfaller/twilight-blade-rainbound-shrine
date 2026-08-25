@@ -42,8 +42,8 @@ export function buildEnvironment(
     new THREE.PlaneGeometry(210, 92),
     new THREE.MeshBasicMaterial({ map: far, depthWrite: false }),
   );
-  backdrop.position.set(0, 22, -28);
-  backdrop.rotation.y = 0.15;
+  backdrop.position.set(8, 28, 148);
+  backdrop.rotation.y = Math.PI;
   scene.add(backdrop);
 
   const sky = new THREE.Mesh(
@@ -71,6 +71,8 @@ export function buildEnvironment(
   addWalls(scene, stone, wood);
   addMaples(scene, quality);
   addMoon(scene);
+  addPathBeacons(scene);
+  addKeeperBeacon(scene);
 
   const rain = makeRain(quality);
   scene.add(rain);
@@ -112,7 +114,7 @@ function addGroundStrip(
   const d = maxZ - minZ;
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(w, 0.35, d),
-    texMat(map, 0xb8c0c8, 0.28, 0.22),
+    texMat(map, 0xe8eef4, 0.32, 0.18),
   );
   mesh.position.set((minX + maxX) / 2, y - 0.16, (minZ + maxZ) / 2);
   mesh.receiveShadow = true;
@@ -129,7 +131,7 @@ function addStairs(scene: THREE.Scene, map: THREE.Texture, z0: number, z1: numbe
     const y = groundHeight(0, (zA + zB) / 2);
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(8.2, 0.42, Math.max(0.7, zB - zA + 0.08)),
-      texMat(map, 0xb0b8c0, 0.3, 0.2),
+      texMat(map, 0xe4eaf0, 0.32, 0.16),
     );
     mesh.position.set(0, y - 0.05, (zA + zB) / 2);
     mesh.receiveShadow = true;
@@ -175,7 +177,14 @@ function addTorii(
   scale: number,
 ): void {
   const g = new THREE.Group();
-  const mat = texMat(verm, 0xff4a2a, 0.35, 0.12);
+  const mat = new THREE.MeshStandardMaterial({
+    map: verm,
+    color: 0xff6a3a,
+    roughness: 0.32,
+    metalness: 0.12,
+    emissive: 0x4a1208,
+    emissiveIntensity: 0.35,
+  });
   const dark = texMat(wood, 0x2a1c12, 0.7, 0.05);
   const h = 5.4 * scale;
   const gap = 3.5 * scale;
@@ -250,6 +259,54 @@ function addMaples(scene: THREE.Scene, quality: Quality): void {
     g.position.set(side * (10 + (i % 3)), 5, 52 + i * 5.2);
     scene.add(g);
   }
+}
+
+function addPathBeacons(scene: THREE.Scene): void {
+  const spots = [
+    [0, 0.4, 6],
+    [0, 1.6, 14],
+    [0, 3.4, 20],
+    [0, 5.6, 26],
+    [2.1, 6.4, 33.4],
+    [0, 5.6, 45],
+    [0, 5.6, 56],
+    [0, 5.6, 64],
+    [0, 5.6, 70],
+    [0, 5.6, 83],
+    [0, 5.6, 104],
+  ];
+  for (const [x, y, z] of spots) {
+    const orb = new THREE.Mesh(
+      new THREE.SphereGeometry(0.16, 10, 10),
+      new THREE.MeshBasicMaterial({ color: 0xffd27a }),
+    );
+    orb.position.set(x, y + 1.4, z);
+    scene.add(orb);
+    const shaft = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 2.2, 6),
+      new THREE.MeshBasicMaterial({ color: 0xffc56a, transparent: true, opacity: 0.28 }),
+    );
+    shaft.position.set(x, y + 2.2, z);
+    scene.add(shaft);
+  }
+}
+
+function addKeeperBeacon(scene: THREE.Scene): void {
+  const g = new THREE.Group();
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.7, 0.95, 28),
+    new THREE.MeshBasicMaterial({ color: 0xffd27a, side: THREE.DoubleSide, transparent: true, opacity: 0.75 }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.08;
+  const column = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.08, 0.08, 5.2, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffe08a, transparent: true, opacity: 0.22 }),
+  );
+  column.position.y = 2.6;
+  g.add(ring, column);
+  g.position.set(2.15, 5, 33.4);
+  scene.add(g);
 }
 
 function addMoon(scene: THREE.Scene): void {

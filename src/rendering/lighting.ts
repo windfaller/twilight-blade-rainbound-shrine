@@ -8,10 +8,10 @@ export interface LightRig {
 }
 
 export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
-  scene.fog = new THREE.FogExp2(0x070b14, quality === "low" ? 0.018 : 0.013);
-  const hemi = new THREE.HemisphereLight(0x9bb6d6, 0x1a120c, 0.55);
+  scene.fog = new THREE.FogExp2(0x152033, quality === "low" ? 0.01 : 0.007);
+  const hemi = new THREE.HemisphereLight(0xc5d6ee, 0x2a2218, 1.15);
   scene.add(hemi);
-  const moon = new THREE.DirectionalLight(0xd8e4ff, 1.15);
+  const moon = new THREE.DirectionalLight(0xe8f0ff, 1.85);
   moon.position.set(-18, 28, -8);
   moon.castShadow = quality !== "low";
   if (moon.castShadow) {
@@ -31,7 +31,7 @@ export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
 }
 
 export function addLanternLight(scene: THREE.Scene, rig: LightRig, x: number, y: number, z: number, quality: Quality): void {
-  const intensity = quality === "low" ? 1.6 : 2.6;
+  const intensity = quality === "low" ? 3.2 : 5.4;
   const light = new THREE.PointLight(0xffb45a, intensity, quality === "high" ? 16 : 11, 1.6);
   light.position.set(x, y + 1.35, z);
   if (quality === "high") {
