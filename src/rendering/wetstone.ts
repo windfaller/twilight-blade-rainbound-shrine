@@ -19,8 +19,8 @@ export function makeWetStoneMaps(): { albedo: THREE.CanvasTexture; roughness: TH
   r.fillStyle = "#c8c8c8";
   r.fillRect(0, 0, size, size);
 
-  const cols = 7;
-  const rows = 7;
+  const cols = 5;
+  const rows = 5;
   const cw = size / cols;
   const ch = size / rows;
   for (let iz = -1; iz <= rows; iz++) {

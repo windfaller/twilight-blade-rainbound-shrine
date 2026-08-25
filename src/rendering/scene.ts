@@ -37,7 +37,7 @@ export class WorldRenderer {
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.24;
+    this.renderer.toneMappingExposure = 1.14;
     this.renderer.shadowMap.enabled = true;
     this.scene.background = new THREE.Color(0x0c121c);
     this.scene.add(this.vfx.root);
@@ -84,7 +84,7 @@ export class WorldRenderer {
     }
     const composer = new EffectComposer(this.renderer);
     composer.addPass(new RenderPass(this.scene, this.camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.26 : 0.16, 0.38, 0.84);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.18 : 0.12, 0.32, 0.88);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
     this.composer = composer;

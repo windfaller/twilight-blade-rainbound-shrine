@@ -42,7 +42,7 @@ export function buildEnvironment(
   );
   scene.add(sky);
 
-  addGroundStrip(scene, wet, -7.4, 7.4, 3.4, 10.2, 0, 0x7a828c);
+  addGroundStrip(scene, wet, -7.4, 7.4, 3.4, 10.2, 0, 0x7a828c, 8.5);
   addStairs(scene, wet, 8, 24);
   addGroundStrip(scene, wet, -6.5, 6.5, 24, 30, 5);
   addGroundStrip(scene, wet, -8, 8.5, 29.5, 41, 5);
@@ -100,12 +100,13 @@ function addGroundStrip(
   maxZ: number,
   y: number,
   tint = 0x7a828c,
+  slab = 5.4,
 ): void {
   const w = maxX - minX;
   const d = maxZ - minZ;
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(w, 0.32, d),
-    wetStoneMat(wet, Math.max(0.7, w / 5.4), Math.max(0.55, d / 5.4), tint),
+    wetStoneMat(wet, Math.max(0.45, w / slab), Math.max(0.4, d / slab), tint),
   );
   mesh.position.set((minX + maxX) / 2, y - 0.15, (minZ + maxZ) / 2);
   mesh.receiveShadow = true;

@@ -28,17 +28,6 @@ function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial 
   });
 }
 
-function uvPlane(w: number, h: number, u0: number, v0: number, u1: number, v1: number): THREE.PlaneGeometry {
-  const geo = new THREE.PlaneGeometry(w, h, 4, 6);
-  const uv = geo.attributes.uv as THREE.BufferAttribute;
-  for (let i = 0; i < uv.count; i++) {
-    const u = uv.getX(i);
-    const v = uv.getY(i);
-    uv.setXY(i, u0 + u * (u1 - u0), v0 + v * (v1 - v0));
-  }
-  return geo;
-}
-
 function bladeMesh(): THREE.Mesh {
   const geo = new THREE.BoxGeometry(0.06, 0.92, 0.03);
   const mat = new THREE.MeshStandardMaterial({
@@ -70,15 +59,8 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
 
   const hair = new THREE.Group();
   hair.name = "hair";
-  const hairMesh = new THREE.Mesh(uvPlane(w * 0.72, visH * 0.28, 0.22, 0.7, 0.78, 1), litSprite(tex, 0.7));
-  hairMesh.position.set(0, visH * 0.82, 0.03);
-  hair.add(hairMesh);
-
   const hem = new THREE.Group();
   hem.name = "hem";
-  const hemMesh = new THREE.Mesh(uvPlane(w * 0.86, visH * 0.24, 0.18, 0.02, 0.82, 0.28), litSprite(tex, 0.62));
-  hemMesh.position.set(0, visH * 0.18, 0.028);
-  hem.add(hemMesh);
 
   const hip = new THREE.Group();
   hip.name = "hip";
@@ -97,21 +79,6 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
   const blade = bladeMesh();
   blade.scale.setScalar(visH / 1.76);
   weapon.add(blade);
-
-  const clothHint = new THREE.Mesh(
-    new THREE.PlaneGeometry(w * 0.28, visH * 0.18),
-    new THREE.MeshStandardMaterial({
-      color: 0x8a2030,
-      transparent: true,
-      opacity: 0.16,
-      roughness: 0.55,
-      metalness: 0.04,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    }),
-  );
-  clothHint.position.set(0.02, visH * 0.3, 0.04);
-  hem.add(clothHint);
 
   torso.add(hair, lArm, rArm, weapon);
   hip.add(torso, hem, lLeg, rLeg, body);
@@ -140,7 +107,7 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
     sprite: body,
     shadow,
     parts: { hip, torso, hair, hem, lLeg, rLeg, lArm, rArm, weapon },
-    overlays: [hairMesh, hemMesh],
+    overlays: [],
   };
 }
 
