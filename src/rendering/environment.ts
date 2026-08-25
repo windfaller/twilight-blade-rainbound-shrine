@@ -253,16 +253,19 @@ function addLantern(
   scale = 1,
 ): void {
   const g = new THREE.Group();
-  const stone = wetStoneMat(wet, 0.45, 0.7, 0x7a828c);
-  const woodMat = new THREE.MeshStandardMaterial({ map: wood, color: 0x3a2a1c, roughness: 0.68, metalness: 0.04 });
-  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.48, 0.18, 6), stone);
-  const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.34, 0.14, 6), stone);
-  plinth.position.y = 0.15;
-  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 0.68, 8), stone);
-  shaft.position.y = 0.56;
-  const mid = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.28, 0.1, 6), stone);
-  mid.position.y = 0.94;
-  g.add(base, plinth, shaft, mid);
+  const stone = wetStoneMat(wet, 0.55, 0.85, 0x6e767e);
+  const capStone = wetStoneMat(wet, 0.35, 0.4, 0x5c646c);
+  const woodMat = new THREE.MeshStandardMaterial({ map: wood, color: 0x3a2a1c, roughness: 0.68, metalness: 0.04, envMapIntensity: 0 });
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.52, 0.2, 8), stone);
+  const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 0.16, 8), capStone);
+  plinth.position.y = 0.16;
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.15, 0.7, 8), stone);
+  shaft.position.y = 0.58;
+  const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.06, 8), capStone);
+  ring.position.y = 0.82;
+  const mid = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.3, 0.12, 8), capStone);
+  mid.position.y = 0.96;
+  g.add(base, plinth, shaft, ring, mid);
   for (const [px, pz] of [
     [-0.13, -0.13],
     [0.13, -0.13],

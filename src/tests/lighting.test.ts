@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import { rainStreakCount } from "../rendering/environment";
 import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting, lanternWarmth } from "../rendering/lighting";
+import { makeCharacterView } from "../rendering/characters";
+import { cutoutSpriteTexture } from "../rendering/cutout";
 import { wetStoneMat } from "../rendering/wetstone";
 
 describe("lighting hotfix", () => {
@@ -28,6 +30,13 @@ describe("lighting hotfix", () => {
   it("keeps near-camera rain sparse so it cannot form a wireframe grid", () => {
     expect(rainStreakCount("med")).toBeLessThanOrEqual(80);
     expect(rainStreakCount("high")).toBeLessThanOrEqual(120);
+  });
+
+  it("does not add a glowing card, rim plane, or extra 3D blade box", () => {
+    expect(makeCharacterView.toString()).not.toContain("AdditiveBlending");
+    expect(makeCharacterView.toString()).not.toMatch(/PlaneGeometry\(\s*w\s*\*\s*1\.1/);
+    expect(makeCharacterView.toString()).not.toContain("BoxGeometry");
+    expect(cutoutSpriteTexture.toString()).not.toContain("blurAlpha");
   });
 
   it("warms the follow rim when standing next to a lantern", () => {
