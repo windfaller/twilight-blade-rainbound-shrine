@@ -97,6 +97,7 @@ export class Game {
     const st = this.state;
     if (st.hitstop > 0) {
       st.hitstop -= dt;
+      checkEncounterClear(st);
       return;
     }
     st.time += dt;
