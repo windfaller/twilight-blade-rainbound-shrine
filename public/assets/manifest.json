@@ -1,0 +1,37 @@
+{
+  "game": "TWILIGHT BLADE: RAINBOUND SHRINE",
+  "title": "暮刃紀行：雨鎖山門",
+  "version": "1.0.0",
+  "acceptance": {
+    "officialLook": true,
+    "blackFrames": false,
+    "contactSheetAsSprite": false,
+    "notes": "Official generated character/environment art committed as unique full-frame images. In-world characters use layered/rigged planes of these arts, never a sliding still."
+  },
+  "assets": {
+    "characters": {
+      "rin": ["characters/rin-fullbody.png", "characters/rin-portrait.png"],
+      "shino": ["characters/shino-fullbody.png", "characters/shino-portrait.png"],
+      "kuzuha": ["characters/kuzuha-fullbody.png", "characters/kuzuha-portrait.png"],
+      "ling": ["characters/ling-shuang-fullbody.png", "characters/ling-shuang-portrait.png"],
+      "elara": ["characters/elara-fullbody.png", "characters/elara-portrait.png"],
+      "vivienne": ["characters/vivienne-fullbody.png", "characters/vivienne-portrait.png"],
+      "keeper": ["characters/lantern-keeper-fullbody.png"]
+    },
+    "enemies": {
+      "yokai": "enemies/yokai-soldier.png",
+      "archer": "enemies/ofuda-archer.png",
+      "hound": "enemies/spirit-hound.png",
+      "caster": "enemies/ofuda-caster.png",
+      "elite": "enemies/elite-warrior.png",
+      "bossPhase1": "enemies/boss-phase1.png",
+      "bossPhase2": "enemies/boss-phase2.png"
+    },
+    "environment": {
+      "farscape": "env/shrine-farscape.png",
+      "wetStone": "env/wet-stone.png",
+      "vermilion": "env/vermilion-wood.png",
+      "darkWood": "env/dark-wood.png"
+    }
+  }
+}
