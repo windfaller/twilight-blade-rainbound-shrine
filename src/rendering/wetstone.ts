@@ -5,6 +5,7 @@ function hash(ix: number, iz: number, seed: number): number {
   return n - Math.floor(n);
 }
 
+/** Large wet flagstones with grout — not a 5×5 speckle tile. */
 export function makeWetStoneMaps(): { albedo: THREE.CanvasTexture; roughness: THREE.CanvasTexture } {
   const size = 512;
   const albedo = document.createElement("canvas");
@@ -14,43 +15,37 @@ export function makeWetStoneMaps(): { albedo: THREE.CanvasTexture; roughness: TH
   const a = albedo.getContext("2d")!;
   const r = rough.getContext("2d")!;
 
-  a.fillStyle = "#2a323a";
+  a.fillStyle = "#1a2026";
   a.fillRect(0, 0, size, size);
-  r.fillStyle = "#c8c8c8";
+  r.fillStyle = "#d4d4d4";
   r.fillRect(0, 0, size, size);
 
-  const cols = 5;
-  const rows = 5;
+  const cols = 3;
+  const rows = 3;
   const cw = size / cols;
   const ch = size / rows;
-  for (let iz = -1; iz <= rows; iz++) {
-    for (let ix = -1; ix <= cols; ix++) {
-      const jx = (hash(ix, iz, 1) - 0.5) * cw * 0.34;
-      const jz = (hash(ix, iz, 2) - 0.5) * ch * 0.34;
-      const x = ix * cw + jx + 4;
-      const z = iz * ch + jz + 4;
-      const w = cw * (0.72 + hash(ix, iz, 3) * 0.2);
-      const d = ch * (0.7 + hash(ix, iz, 4) * 0.22);
-      const shade = 92 + hash(ix, iz, 5) * 40;
-      const cool = hash(ix, iz, 6) * 10;
-      a.fillStyle = `rgb(${shade + 4 | 0},${shade + 6 | 0},${shade + 10 + cool | 0})`;
+  const grout = 13;
+  for (let iz = 0; iz < rows; iz++) {
+    for (let ix = 0; ix < cols; ix++) {
+      const jx = (hash(ix, iz, 1) - 0.5) * 8;
+      const jz = (hash(ix, iz, 2) - 0.5) * 8;
+      const x = ix * cw + grout + jx;
+      const z = iz * ch + grout + jz;
+      const w = cw - grout * 2;
+      const d = ch - grout * 2;
+      const shade = 112 + hash(ix, iz, 5) * 20;
+      const cool = hash(ix, iz, 6) * 8;
+      a.fillStyle = `rgb(${(shade + 2) | 0},${(shade + 6) | 0},${(shade + 12 + cool) | 0})`;
       a.fillRect(x, z, w, d);
-      a.strokeStyle = `rgba(8,10,12,0.85)`;
-      a.lineWidth = 3 + hash(ix, iz, 7) * 2;
-      a.strokeRect(x, z, w, d);
-      if (hash(ix, iz, 8) > 0.55) {
-        a.fillStyle = `rgba(28, 52, 34, ${0.18 + hash(ix, iz, 9) * 0.22})`;
-        a.fillRect(x - 2, z + d * 0.7, w + 4, 5);
+      a.strokeStyle = "rgba(10,12,14,0.5)";
+      a.lineWidth = 5;
+      a.strokeRect(x + 2, z + 2, w - 4, d - 4);
+      if (hash(ix, iz, 10) > 0.35) {
+        a.fillStyle = `rgba(198, 212, 224, ${0.05 + hash(ix, iz, 11) * 0.04})`;
+        a.fillRect(x + w * 0.14, z + d * 0.16, w * 0.36, d * 0.07);
       }
-      if (hash(ix, iz, 10) > 0.62) {
-        a.fillStyle = `rgba(210, 220, 230, ${0.05 + hash(ix, iz, 11) * 0.07})`;
-        a.fillRect(x + w * 0.15, z + d * 0.18, w * 0.45, d * 0.12);
-      }
-      r.fillStyle = `rgb(${48 + hash(ix, iz, 12) * 36 | 0},${48 | 0},${48 | 0})`;
-      r.fillRect(x + 2, z + 2, w - 4, d - 4);
-      r.strokeStyle = "#dedede";
-      r.lineWidth = 4;
-      r.strokeRect(x, z, w, d);
+      r.fillStyle = `rgb(${36 + hash(ix, iz, 12) * 16 | 0},40,40)`;
+      r.fillRect(x + 4, z + 4, w - 8, d - 8);
     }
   }
 
@@ -97,8 +92,8 @@ export function wetStoneMat(
     map,
     roughnessMap,
     color: tint,
-    roughness: 0.42,
-    metalness: 0.08,
+    roughness: 0.5,
+    metalness: 0.04,
     emissive: 0x000000,
     envMapIntensity: 0,
   });

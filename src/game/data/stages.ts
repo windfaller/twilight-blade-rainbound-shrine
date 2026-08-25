@@ -116,11 +116,13 @@ export const ENCOUNTER_SPAWNS: Record<string, { id: string; x: number; z: number
   boss: [{ id: "boss", x: 0, z: 108.5 }],
 };
 
+export const STAIR_STEPS = 22;
+
 export function groundHeight(_x: number, z: number): number {
   if (z < 8) return 0;
   if (z < 24) {
     const t = (z - 8) / 16;
-    const step = Math.floor(t * 10) / 10;
+    const step = Math.floor(t * STAIR_STEPS) / STAIR_STEPS;
     return step * 5;
   }
   return 5;

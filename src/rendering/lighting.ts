@@ -43,8 +43,8 @@ export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
 
 export function addLanternLight(scene: THREE.Scene, rig: LightRig, x: number, y: number, z: number, quality: Quality): void {
   if (rig.lanterns.length >= MAX_LANTERN_LIGHTS) return;
-  const intensity = quality === "low" ? 4.8 : 6.4;
-  const light = new THREE.PointLight(0xffb45a, intensity, 8.5, 1.55);
+  const intensity = quality === "low" ? 3.2 : 3.8;
+  const light = new THREE.PointLight(0xffb45a, intensity, 12.5, 1.08);
   light.position.set(x, y + 1.28, z);
   light.castShadow = false;
   scene.add(light);
@@ -54,7 +54,8 @@ export function addLanternLight(scene: THREE.Scene, rig: LightRig, x: number, y:
 export function applyQuality(renderer: THREE.WebGLRenderer, quality: Quality): void {
   renderer.shadowMap.enabled = quality === "high";
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.setPixelRatio(quality === "high" ? Math.min(devicePixelRatio, 1.75) : quality === "med" ? 1.25 : 1);
+  const dpr = typeof devicePixelRatio === "number" ? devicePixelRatio : 1;
+  renderer.setPixelRatio(quality === "low" ? 1 : Math.min(dpr, 2));
 }
 
 /** Never assign a failed PMREM. Lights already keep Standard meshes visible. */

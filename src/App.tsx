@@ -173,10 +173,6 @@ export default function App() {
       <div className="tb-canvas-host">
         <canvas ref={canvasRef} />
       </div>
-      <div className="tb-rain" aria-hidden>
-        <div className="tb-rain-a" />
-        <div className="tb-rain-b" />
-      </div>
       <div className="tb-vignette" aria-hidden />
       <div className="tb-ui">
         {screen === "loading" && <LoadingScreen loading={snap.loading} onRetry={() => { game.enqueue({ type: "retryLoad" }); void loadWorld(rendererRef.current!); }} />}

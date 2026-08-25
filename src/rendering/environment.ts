@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { LANTERN_POINTS, TORII_GATES, groundHeight } from "../game/data/stages";
+import { LANTERN_POINTS, STAIR_STEPS, TORII_GATES, groundHeight } from "../game/data/stages";
 import { addLanternLight, type LightRig } from "./lighting";
 import { makeWetStoneMaps, wetStoneMat } from "./wetstone";
 import type { Quality } from "../game/types";
@@ -42,20 +42,21 @@ export function buildEnvironment(
   );
   scene.add(sky);
 
-  addGroundStrip(scene, wet, -7.4, 7.4, 3.4, 10.2, 0, 0x7a828c, 8.5);
+  addGroundStrip(scene, wet, -7.4, 7.4, 3.4, 10.2, 0, 0x7a828c, 16);
   addStairs(scene, wet, 8, 24);
-  addGroundStrip(scene, wet, -6.5, 6.5, 24, 30, 5);
-  addGroundStrip(scene, wet, -8, 8.5, 29.5, 41, 5);
+  addGroundStrip(scene, wet, -6.5, 6.5, 24, 30, 5, 0x7a828c, 14);
+  addGroundStrip(scene, wet, -8, 8.5, 29.5, 41, 5, 0x7a828c, 14);
   addBridge(scene, wet, wood);
   addGroundStrip(scene, wet, -11, 12, 50.5, 74, 5);
   addGroundStrip(scene, wet, -9, 9, 75, 91, 5);
   addGroundStrip(scene, wet, -4, 4, 90.5, 97, 5);
   addGroundStrip(scene, wet, -11, 11, 96.5, 118, 5);
 
-  for (const t of TORII_GATES) addTorii(scene, verm, wood, t.x, t.y, t.z, t.scale);
+  for (const t of TORII_GATES) addTorii(scene, verm, wood, t.x, groundHeight(t.x, t.z), t.z, t.scale);
   for (const p of LANTERN_POINTS) {
-    addLantern(scene, wet, wood, p.x, p.y, p.z);
-    addLanternLight(scene, lights, p.x, p.y, p.z, quality);
+    const ly = groundHeight(p.x, p.z);
+    addLantern(scene, wet, wood, p.x, ly, p.z);
+    addLanternLight(scene, lights, p.x, ly, p.z, quality);
   }
 
   addWalls(scene, wet);
@@ -101,7 +102,7 @@ function addGroundStrip(
   maxZ: number,
   y: number,
   tint = 0x7a828c,
-  slab = 5.4,
+  slab = 12,
 ): void {
   const w = maxX - minX;
   const d = maxZ - minZ;
@@ -121,41 +122,44 @@ function addGroundStrip(
 }
 
 function addStairs(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>, z0: number, z1: number): void {
-  const steps = 10;
+  const steps = STAIR_STEPS;
+  const groutMat = new THREE.MeshStandardMaterial({ color: 0x2a3238, roughness: 0.9, metalness: 0.02, envMapIntensity: 0 });
   for (let i = 0; i < steps; i++) {
     const t0 = i / steps;
     const t1 = (i + 1) / steps;
     const zA = z0 + (z1 - z0) * t0;
     const zB = z0 + (z1 - z0) * t1;
     const y = groundHeight(0, (zA + zB) / 2);
-    const depth = Math.max(0.72, zB - zA + 0.06);
+    const depth = Math.max(0.4, zB - zA + 0.03);
     const tread = new THREE.Mesh(
-      new THREE.BoxGeometry(6.05, 0.38, depth),
-      wetStoneMat(wet, 1.15, 0.32, 0x8a929c, i * 0.08, i * 0.11),
+      new THREE.BoxGeometry(5.72, 0.13, depth - 0.06),
+      wetStoneMat(wet, 0.38, 0.14, 0x8e96a0, (i % 3) * 0.33, (i % 3) * 0.12),
     );
-    tread.position.set(0, y - 0.04, (zA + zB) / 2);
+    tread.position.set(0, y - 0.02, (zA + zB) / 2);
     tread.receiveShadow = true;
     tread.castShadow = true;
+    const nosing = new THREE.Mesh(new THREE.BoxGeometry(5.86, 0.04, 0.07), groutMat);
+    nosing.position.set(0, y - 0.07, zA + 0.03);
     const riser = new THREE.Mesh(
-      new THREE.BoxGeometry(6.05, 0.46, 0.12),
-      wetStoneMat(wet, 1.1, 0.18, 0x5c646e, 0.2, i * 0.07),
+      new THREE.BoxGeometry(5.86, 0.24, 0.07),
+      wetStoneMat(wet, 0.36, 0.1, 0x5c646e, 0.2, i * 0.04),
     );
-    riser.position.set(0, y - 0.22, zA + 0.04);
+    riser.position.set(0, y - 0.16, zA + 0.02);
     const cheekL = new THREE.Mesh(
-      new THREE.BoxGeometry(0.38, 0.92, depth + 0.08),
-      wetStoneMat(wet, 0.22, 0.34, 0x5a626c, 0.4, i * 0.09),
+      new THREE.BoxGeometry(0.28, 0.62, depth + 0.04),
+      wetStoneMat(wet, 0.14, 0.22, 0x5a626c, 0.4, i * 0.05),
     );
-    cheekL.position.set(-3.18, y + 0.28, (zA + zB) / 2);
+    cheekL.position.set(-3.12, y + 0.16, (zA + zB) / 2);
     const cheekR = cheekL.clone();
-    cheekR.position.x = 3.18;
+    cheekR.position.x = 3.12;
     const mossL = new THREE.Mesh(
-      new THREE.BoxGeometry(0.42, 0.07, Math.max(0.5, depth)),
+      new THREE.BoxGeometry(0.3, 0.05, Math.max(0.36, depth - 0.08)),
       new THREE.MeshStandardMaterial({ color: 0x1c3324, roughness: 0.92 }),
     );
-    mossL.position.set(-2.82, y + 0.14, (zA + zB) / 2);
+    mossL.position.set(-2.78, y + 0.06, (zA + zB) / 2);
     const mossR = mossL.clone();
-    mossR.position.x = 2.82;
-    scene.add(tread, riser, cheekL, cheekR, mossL, mossR);
+    mossR.position.x = 2.78;
+    scene.add(tread, nosing, riser, cheekL, cheekR, mossL, mossR);
   }
 }
 
@@ -288,11 +292,18 @@ function addLantern(
   const roof = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.2, 4), stone);
   roof.position.y = 1.44;
   roof.rotation.y = Math.PI / 4;
-  const glow = new THREE.Mesh(
-    new THREE.SphereGeometry(0.42, 12, 12),
-    new THREE.MeshBasicMaterial({ color: 0xffb45a, transparent: true, opacity: 0.14, depthWrite: false }),
+  const glow = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: lanternGlowTex(),
+      color: 0xffc27a,
+      transparent: true,
+      opacity: 0.42,
+      depthWrite: false,
+      fog: true,
+    }),
   );
   glow.position.y = 1.16;
+  glow.scale.set(2.6, 2.6, 1);
   const moss = new THREE.Mesh(
     new THREE.SphereGeometry(0.11, 6, 6),
     new THREE.MeshStandardMaterial({ color: 0x2f4a32, roughness: 0.95 }),
@@ -444,28 +455,47 @@ function addPuddles(scene: THREE.Scene): void {
   }
 }
 
+export function rainStreakCount(quality: Quality): number {
+  return quality === "high" ? 140 : quality === "med" ? 90 : 48;
+}
+
 function makeRain(quality: Quality): THREE.LineSegments {
-  const n = quality === "high" ? 1900 : quality === "med" ? 1000 : 420;
+  const n = rainStreakCount(quality);
   const pos = new Float32Array(n * 6);
   for (let i = 0; i < n; i++) {
-    const near = i < n * 0.55;
-    const x = (Math.random() - 0.5) * (near ? 18 : 46);
-    const y = Math.random() * 16 + (near ? 1 : 0);
-    const z = near ? 4 + Math.random() * 28 : Math.random() * 130 - 4;
+    const x = (Math.random() - 0.5) * 12;
+    const y = 1.2 + Math.random() * 9;
+    const z = 3.4 + Math.random() * 16;
+    const len = 3.4 + Math.random() * 1.8;
     const i6 = i * 6;
     pos[i6] = x;
     pos[i6 + 1] = y;
     pos[i6 + 2] = z;
-    pos[i6 + 3] = x + 0.05;
-    pos[i6 + 4] = y - 1.45;
-    pos[i6 + 5] = z + 0.03;
+    pos[i6 + 3] = x + 1.15;
+    pos[i6 + 4] = y - len;
+    pos[i6 + 5] = z + 0.35;
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   return new THREE.LineSegments(
     geo,
-    new THREE.LineBasicMaterial({ color: 0xc8d8ea, transparent: true, opacity: 0.34 }),
+    new THREE.LineBasicMaterial({ color: 0xb8c8da, transparent: true, opacity: 0.16 }),
   );
+}
+
+function lanternGlowTex(): THREE.CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const g = c.getContext("2d")!;
+  const grd = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+  grd.addColorStop(0, "rgba(255, 210, 140, 0.55)");
+  grd.addColorStop(0.35, "rgba(255, 176, 90, 0.18)");
+  grd.addColorStop(1, "rgba(255, 176, 90, 0)");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 128, 128);
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
 }
 
 function mistTex(): THREE.CanvasTexture {
@@ -488,10 +518,10 @@ function makeMist(quality: Quality): THREE.Group {
   const tex = mistTex();
   for (let i = 0; i < n; i++) {
     const spr = new THREE.Sprite(
-      new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, opacity: 0.34, fog: true }),
+      new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, opacity: 0.18, fog: true }),
     );
-    spr.scale.set(5.2 + (i % 3), 1.35, 1);
-    spr.position.set((i % 2 === 0 ? -1 : 1) * 1.8, 0.55 + (i % 3) * 0.08, 7.2 + i * 3.4);
+    spr.scale.set(4.4 + (i % 3) * 0.4, 1.15, 1);
+    spr.position.set((i % 2 === 0 ? -1 : 1) * 2.4, 0.55 + (i % 3) * 0.08, 8.4 + i * 4.2);
     g.add(spr);
   }
   return g;
@@ -517,9 +547,10 @@ export function stepAtmosphere(env: EnvHandles, dt: number, heavy: boolean): voi
     let y0 = rain.getY(i) - dt * fall;
     let y1 = rain.getY(i + 1) - dt * fall;
     if (y0 < 0) {
-      const ny = 12 + Math.random() * 5;
+      const drop = rain.getY(i) - rain.getY(i + 1);
+      const ny = 8 + Math.random() * 4;
       y0 = ny;
-      y1 = ny - 1.45;
+      y1 = ny - drop;
     }
     rain.setY(i, y0);
     rain.setY(i + 1, y1);

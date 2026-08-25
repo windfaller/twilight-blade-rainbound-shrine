@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { bakeNav, findPath, isWalkablePoint, nearestWalkable } from "../game/systems/navigation";
-import { PILLARS, SPAWN } from "../game/data/stages";
+import { PILLARS, SPAWN, STAIR_STEPS, groundHeight } from "../game/data/stages";
 
 describe("navigation", () => {
   it("spawn and altar are walkable, pillars are not", () => {
@@ -21,6 +21,16 @@ describe("navigation", () => {
   it("sealed gate blocks the hall until opened", () => {
     expect(isWalkablePoint(0, 94, false, false)).toBe(false);
     expect(isWalkablePoint(0, 94, true, false)).toBe(true);
+  });
+
+  it("stair collision uses many shallow treads, not 10 giant boxes", () => {
+    expect(STAIR_STEPS).toBeGreaterThanOrEqual(20);
+    expect(groundHeight(0, 8.2)).toBe(0);
+    expect(groundHeight(0, 12)).toBeGreaterThan(0);
+    expect(groundHeight(0, 12)).toBeLessThan(2);
+    const a = groundHeight(0, 12.1);
+    const b = groundHeight(0, 12.9);
+    expect(b - a).toBeLessThan(0.4);
   });
 
   it("phase-2 crater is not walkable", () => {

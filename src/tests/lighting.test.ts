@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
+import { rainStreakCount } from "../rendering/environment";
 import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting } from "../rendering/lighting";
 import { wetStoneMat } from "../rendering/wetstone";
 
@@ -22,5 +23,10 @@ describe("lighting hotfix", () => {
   it("wet stone factory is Standard, not Physical", () => {
     expect(wetStoneMat.toString()).toContain("MeshStandardMaterial");
     expect(wetStoneMat.toString()).not.toContain("MeshPhysicalMaterial");
+  });
+
+  it("keeps near-camera rain sparse so it cannot form a wireframe grid", () => {
+    expect(rainStreakCount("med")).toBeLessThanOrEqual(100);
+    expect(rainStreakCount("high")).toBeLessThanOrEqual(160);
   });
 });
