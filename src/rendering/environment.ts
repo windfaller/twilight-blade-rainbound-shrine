@@ -48,7 +48,6 @@ export function buildEnvironment(
   addStairs(scene, wet, 8, 24);
   addDarkSoil(scene, -6.8, 6.8, 23.8, 41.2, 4.86);
   addWoodWalkway(scene, -2.35, 2.35, 24, 40.6, 5.06);
-  addForegroundToriiPost(scene, verm);
   addBridge(scene, wet, wood);
   addGroundStrip(scene, wet, -11, 12, 50.5, 74, 5);
   addGroundStrip(scene, wet, -9, 9, 75, 91, 5);
@@ -397,25 +396,6 @@ function addLantern(
   scene.add(g);
 }
 
-function addForegroundToriiPost(scene: THREE.Scene, verm: THREE.Texture): void {
-  const mat = new THREE.MeshStandardMaterial({
-    map: verm,
-    color: 0xc43a2c,
-    roughness: 0.38,
-    metalness: 0.08,
-    emissive: 0x4a1008,
-    emissiveIntensity: 0.35,
-    envMapIntensity: 0,
-  });
-  const post = new THREE.Mesh(new THREE.BoxGeometry(0.58, 6.4, 0.58), mat);
-  post.position.set(-3.15, 3.15, 5.15);
-  post.castShadow = true;
-  post.name = "occluder";
-  const cap = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.22, 0.72), mat);
-  cap.position.set(-3.15, 6.45, 5.15);
-  scene.add(post, cap);
-}
-
 function addPine(scene: THREE.Scene, x: number, y: number, z: number, scale: number): void {
   const pine = new THREE.Group();
   const trunk = new THREE.Mesh(
@@ -442,7 +422,7 @@ function addForegroundOccluders(
   wet: ReturnType<typeof makeWetStoneMaps>,
   wood: THREE.Texture,
 ): void {
-  addLantern(scene, wet, wood, -5.35, 0, 4.35, 1.55);
+  addLantern(scene, wet, wood, -5.9, 0, 3.4, 1.05);
   const pine = new THREE.Group();
   pine.name = "occluder";
   const trunk = new THREE.Mesh(

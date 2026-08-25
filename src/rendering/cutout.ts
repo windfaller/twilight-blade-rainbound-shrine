@@ -37,6 +37,10 @@ function isPaleCard(r: number, g: number, b: number): boolean {
   return (luma > 140 && chroma < 42) || (luma > 108 && chroma < 28);
 }
 
+export function isChromaGreen(r: number, g: number, b: number): boolean {
+  return g >= 88 && g > r + 26 && g > b + 16 && g - Math.max(r, b) > 14;
+}
+
 /**
  * Pale studio card, light-gray / off-white quad, cool mid-gray wash,
  * or navy similar to sampled edges. Warm skin / vermilion / brown hair survive.
@@ -45,6 +49,7 @@ export function isBackdropPixel(r: number, g: number, b: number, bg?: { r: numbe
   const luma = (r + g + b) / 3;
   const chroma = Math.max(r, g, b) - Math.min(r, g, b);
   const cool = b >= g - 6 && g >= r - 8;
+  if (isChromaGreen(r, g, b)) return true;
   if (isPaleCard(r, g, b)) return true;
   if (cool && luma > 62 && luma < 160 && chroma < 50 && chroma <= luma * 0.55) return true;
   if (luma < 32 && chroma < 18 && cool) return true;
@@ -128,8 +133,22 @@ export function cutoutSpriteTexture(src: THREE.Texture): THREE.Texture {
   ctx.drawImage(img as CanvasImageSource, 0, 0, w, h);
   const image = ctx.getImageData(0, 0, w, h);
   const d = image.data;
-  const bg = sampleBg(d, w, h);
-  floodKillCard(d, w, h, bg);
+  let edgeClear = 0;
+  let edgeN = 0;
+  for (let x = 0; x < w; x += 4) {
+    edgeN += 2;
+    if (d[x * 4 + 3] < 16) edgeClear += 1;
+    if (d[((h - 1) * w + x) * 4 + 3] < 16) edgeClear += 1;
+  }
+  const preKeyed = edgeN > 0 && edgeClear / edgeN > 0.55;
+  if (preKeyed) {
+    for (let i = 0; i < d.length; i += 4) {
+      if (isChromaGreen(d[i], d[i + 1], d[i + 2]) || isPaleCard(d[i], d[i + 1], d[i + 2])) d[i + 3] = 0;
+    }
+  } else {
+    const bg = sampleBg(d, w, h);
+    floodKillCard(d, w, h, bg);
+  }
 
   const border = Math.max(8, Math.round(Math.min(w, h) * 0.03));
   let minX = w;

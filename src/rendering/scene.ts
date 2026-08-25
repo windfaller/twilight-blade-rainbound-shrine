@@ -60,7 +60,7 @@ export class WorldRenderer {
         );
       });
       tex.colorSpace = THREE.SRGBColorSpace;
-      if (e.id !== "farscape" && !e.id.startsWith("tex-")) {
+      if (e.id !== "farscape" && !e.id.startsWith("tex-") && !e.id.endsWith("-port")) {
         tex = cutoutSpriteTexture(tex);
       }
       this.textures.set(e.id, tex);
