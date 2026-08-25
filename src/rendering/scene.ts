@@ -80,7 +80,7 @@ export class WorldRenderer {
     }
     const composer = new EffectComposer(this.renderer);
     composer.addPass(new RenderPass(this.scene, this.camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.46 : 0.28, 0.55, 0.72);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), quality === "high" ? 0.3 : 0.18, 0.42, 0.86);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
     this.composer = composer;

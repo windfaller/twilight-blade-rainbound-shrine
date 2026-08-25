@@ -121,7 +121,7 @@ function addGroundStrip(
   scene.add(mesh);
   const moss = new THREE.Mesh(
     new THREE.BoxGeometry(Math.min(1.4, w * 0.18), 0.07, Math.min(d, 8)),
-    new THREE.MeshStandardMaterial({ color: 0x2a4630, roughness: 0.94 }),
+    new THREE.MeshStandardMaterial({ color: 0x1c3324, roughness: 0.94 }),
   );
   moss.position.set(minX + 0.7, y + 0.04, (minZ + maxZ) / 2);
   scene.add(moss);
@@ -150,7 +150,7 @@ function addStairs(scene: THREE.Scene, map: THREE.Texture, z0: number, z1: numbe
       railR.position.x = 4.2;
       const mossL = new THREE.Mesh(
         new THREE.BoxGeometry(0.55, 0.08, Math.max(0.6, zB - zA)),
-        new THREE.MeshStandardMaterial({ color: 0x2a4630, roughness: 0.92 }),
+        new THREE.MeshStandardMaterial({ color: 0x1c3324, roughness: 0.92 }),
       );
       mossL.position.set(-3.7, y + 0.12, (zA + zB) / 2);
       const mossR = mossL.clone();
@@ -309,14 +309,14 @@ function addPathBeacons(scene: THREE.Scene): void {
   ];
   for (const [x, y, z] of spots) {
     const orb = new THREE.Mesh(
-      new THREE.SphereGeometry(0.16, 10, 10),
-      new THREE.MeshBasicMaterial({ color: 0xffd27a }),
+      new THREE.SphereGeometry(0.09, 10, 10),
+      new THREE.MeshStandardMaterial({ color: 0xe7b868, emissive: 0xc48a3a, emissiveIntensity: 0.8, roughness: 0.35 }),
     );
     orb.position.set(x, y + 1.4, z);
     scene.add(orb);
     const shaft = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 2.2, 6),
-      new THREE.MeshBasicMaterial({ color: 0xffc56a, transparent: true, opacity: 0.28 }),
+      new THREE.CylinderGeometry(0.03, 0.03, 2.2, 6),
+      new THREE.MeshBasicMaterial({ color: 0xe7b868, transparent: true, opacity: 0.16 }),
     );
     shaft.position.set(x, y + 2.2, z);
     scene.add(shaft);

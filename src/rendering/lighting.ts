@@ -10,7 +10,7 @@ export interface LightRig {
 
 export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
   scene.fog = new THREE.FogExp2(0x070a10, quality === "low" ? 0.012 : 0.0075);
-  const hemi = new THREE.HemisphereLight(0x7a92b0, 0x1a140c, 0.48);
+  const hemi = new THREE.HemisphereLight(0x8aa4c0, 0x1a140c, 0.72);
   scene.add(hemi);
   const moon = new THREE.DirectionalLight(0xd8e6ff, 1.35);
   moon.position.set(-22, 34, -6);

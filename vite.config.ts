@@ -14,8 +14,8 @@ function pagesFallback() {
   };
 }
 
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/twilight-blade-rainbound-shrine/" : "/",
+export default defineConfig(({ command, isPreview }) => ({
+  base: command === "build" || isPreview ? "/twilight-blade-rainbound-shrine/" : "/",
   plugins: [react(), pagesFallback()],
   resolve: {
     alias: {

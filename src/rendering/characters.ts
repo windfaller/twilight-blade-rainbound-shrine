@@ -22,8 +22,8 @@ function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial 
     alphaTest: 0.06,
     roughness: 0.42,
     metalness: 0.06,
-    emissive: new THREE.Color(0x2a1a0c),
-    emissiveIntensity: 0.18,
+    emissive: new THREE.Color(0x4a2e14),
+    emissiveIntensity: 0.32,
     envMapIntensity: 0.7,
   });
 }

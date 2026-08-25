@@ -62,7 +62,7 @@ export function Hud({
           </button>
         ))}
       </div>
-      <div className="mobile-only" style={{ position: "absolute", left: 18, bottom: 18, display: "flex", gap: 8, pointerEvents: "auto" }}>
+      <div className="mobile-only" style={{ position: "absolute", left: 18, bottom: 18, gap: 8, pointerEvents: "auto" }}>
         <button className="tb-btn" onClick={onAttack} style={{ minWidth: 64 }}>
           攻擊
         </button>
