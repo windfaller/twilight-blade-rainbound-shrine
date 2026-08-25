@@ -15,37 +15,36 @@ export function makeWetStoneMaps(): { albedo: THREE.CanvasTexture; roughness: TH
   const a = albedo.getContext("2d")!;
   const r = rough.getContext("2d")!;
 
-  a.fillStyle = "#1a2026";
+  a.fillStyle = "#14181c";
   a.fillRect(0, 0, size, size);
-  r.fillStyle = "#d4d4d4";
+  r.fillStyle = "#cfcfcf";
   r.fillRect(0, 0, size, size);
 
   const cols = 3;
   const rows = 3;
   const cw = size / cols;
   const ch = size / rows;
-  const grout = 13;
+  const grout = 16;
   for (let iz = 0; iz < rows; iz++) {
     for (let ix = 0; ix < cols; ix++) {
-      const jx = (hash(ix, iz, 1) - 0.5) * 8;
-      const jz = (hash(ix, iz, 2) - 0.5) * 8;
+      const jx = (hash(ix, iz, 1) - 0.5) * 6;
+      const jz = (hash(ix, iz, 2) - 0.5) * 6;
       const x = ix * cw + grout + jx;
       const z = iz * ch + grout + jz;
       const w = cw - grout * 2;
       const d = ch - grout * 2;
-      const shade = 112 + hash(ix, iz, 5) * 20;
-      const cool = hash(ix, iz, 6) * 8;
-      a.fillStyle = `rgb(${(shade + 2) | 0},${(shade + 6) | 0},${(shade + 12 + cool) | 0})`;
+      const shade = 98 + hash(ix, iz, 5) * 18;
+      const cool = hash(ix, iz, 6) * 10;
+      a.fillStyle = `rgb(${(shade + 2) | 0},${(shade + 6) | 0},${(shade + 14 + cool) | 0})`;
       a.fillRect(x, z, w, d);
-      a.strokeStyle = "rgba(10,12,14,0.5)";
-      a.lineWidth = 5;
-      a.strokeRect(x + 2, z + 2, w - 4, d - 4);
-      if (hash(ix, iz, 10) > 0.35) {
-        a.fillStyle = `rgba(198, 212, 224, ${0.05 + hash(ix, iz, 11) * 0.04})`;
-        a.fillRect(x + w * 0.14, z + d * 0.16, w * 0.36, d * 0.07);
-      }
-      r.fillStyle = `rgb(${36 + hash(ix, iz, 12) * 16 | 0},40,40)`;
-      r.fillRect(x + 4, z + 4, w - 8, d - 8);
+      a.strokeStyle = "rgba(8,10,12,0.62)";
+      a.lineWidth = 7;
+      a.strokeRect(x + 3, z + 3, w - 6, d - 6);
+      a.strokeStyle = "rgba(170,184,196,0.08)";
+      a.lineWidth = 2;
+      a.strokeRect(x + 10, z + 10, w - 20, d - 20);
+      r.fillStyle = `rgb(${34 + hash(ix, iz, 12) * 12 | 0},38,38)`;
+      r.fillRect(x + 6, z + 6, w - 12, d - 12);
     }
   }
 
