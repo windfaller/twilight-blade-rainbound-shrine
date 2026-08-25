@@ -12,10 +12,16 @@ function sampleBg(d: Uint8ClampedArray, w: number, h: number): { r: number; g: n
     0,
     4,
     (w - 5) * 4,
-    ((h - 1) * w) * 4,
+    (h - 1) * w * 4,
     ((h - 1) * w + w - 5) * 4,
-    (Math.floor(h * 0.08) * w + 6) * 4,
-    (Math.floor(h * 0.08) * w + w - 7) * 4,
+    (Math.floor(h * 0.04) * w + 8) * 4,
+    (Math.floor(h * 0.04) * w + w - 9) * 4,
+    (Math.floor(h * 0.12) * w + 6) * 4,
+    (Math.floor(h * 0.12) * w + w - 7) * 4,
+    (Math.floor(h * 0.5) * w + 4) * 4,
+    (Math.floor(h * 0.5) * w + w - 5) * 4,
+    (Math.floor(h * 0.88) * w + 5) * 4,
+    (Math.floor(h * 0.88) * w + w - 6) * 4,
   ];
   let r = 0;
   let g = 0;
@@ -29,7 +35,77 @@ function sampleBg(d: Uint8ClampedArray, w: number, h: number): { r: number; g: n
   return { r: r / n, g: g / n, b: b / n };
 }
 
-/** Tight figure cutout. Unused plane pixels must be fully discarded — no card, no blur fill. */
+/**
+ * Pale studio card, light-gray / off-white quad, cool mid-gray wash,
+ * or dark navy backdrop. Warm skin / vermilion cloth must survive.
+ */
+export function isBackdropPixel(r: number, g: number, b: number, bg?: { r: number; g: number; b: number }): boolean {
+  const luma = (r + g + b) / 3;
+  const chroma = Math.max(r, g, b) - Math.min(r, g, b);
+  const cool = b >= g - 6 && g >= r - 8;
+  if (luma > 148 && chroma < 42) return true;
+  if (luma > 112 && chroma < 30) return true;
+  if (cool && luma > 52 && luma < 168 && chroma < 52 && chroma <= luma * 0.58) return true;
+  if (luma < 78 && chroma < 36 && b >= r - 8) return true;
+  if (bg) {
+    const dist = Math.hypot(r - bg.r, g - bg.g, b - bg.b);
+    if (dist < 48 && chroma < 40 && (cool || luma < 90)) return true;
+  }
+  return false;
+}
+
+function floodKillCard(d: Uint8ClampedArray, w: number, h: number, bg: { r: number; g: number; b: number }): void {
+  const seen = new Uint8Array(w * h);
+  const q: number[] = [];
+  const enqueue = (x: number, y: number) => {
+    if (x < 0 || y < 0 || x >= w || y >= h) return;
+    const i = y * w + x;
+    if (seen[i]) return;
+    const p = i * 4;
+    if (!isBackdropPixel(d[p], d[p + 1], d[p + 2], bg)) return;
+    seen[i] = 1;
+    q.push(i);
+  };
+  for (let x = 0; x < w; x++) {
+    enqueue(x, 0);
+    enqueue(x, h - 1);
+  }
+  for (let y = 0; y < h; y++) {
+    enqueue(0, y);
+    enqueue(w - 1, y);
+  }
+  while (q.length) {
+    const i = q.pop()!;
+    const x = i % w;
+    const y = (i / w) | 0;
+    d[i * 4 + 3] = 0;
+    enqueue(x - 1, y);
+    enqueue(x + 1, y);
+    enqueue(x, y - 1);
+    enqueue(x, y + 1);
+  }
+  /* Eat a 4px fringe so lit leftover studio cannot form a rectangle. */
+  const kill = new Uint8Array(w * h);
+  for (let pass = 0; pass < 4; pass++) {
+    kill.fill(0);
+    for (let y = 1; y < h - 1; y++) {
+      for (let x = 1; x < w - 1; x++) {
+        const i = y * w + x;
+        if (d[i * 4 + 3] > 0 && (seen[i - 1] || seen[i + 1] || seen[i - w] || seen[i + w])) {
+          kill[i] = 1;
+        }
+      }
+    }
+    for (let i = 0; i < kill.length; i++) {
+      if (kill[i]) {
+        d[i * 4 + 3] = 0;
+        seen[i] = 1;
+      }
+    }
+  }
+}
+
+/** Tight figure cutout. Unused plane pixels must be fully discarded — no pale or dark card. */
 export function cutoutSpriteTexture(src: THREE.Texture): THREE.Texture {
   const img = src.image as TexImageSource | undefined;
   if (!img || typeof document === "undefined") return src;
@@ -45,12 +121,14 @@ export function cutoutSpriteTexture(src: THREE.Texture): THREE.Texture {
   const image = ctx.getImageData(0, 0, w, h);
   const d = image.data;
   const bg = sampleBg(d, w, h);
+  floodKillCard(d, w, h, bg);
 
+  const border = Math.max(10, Math.round(Math.min(w, h) * 0.04));
+  const edgeBand = Math.max(border, Math.round(Math.min(w, h) * 0.1));
   let minX = w;
   let minY = h;
   let maxX = 0;
   let maxY = 0;
-  const border = Math.max(6, Math.round(Math.min(w, h) * 0.03));
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = (y * w + x) * 4;
@@ -58,23 +136,12 @@ export function cutoutSpriteTexture(src: THREE.Texture): THREE.Texture {
         d[i + 3] = 0;
         continue;
       }
-      const r = d[i];
-      const g = d[i + 1];
-      const b = d[i + 2];
-      const dr = r - bg.r;
-      const dg = g - bg.g;
-      const db = b - bg.b;
-      const dist = Math.sqrt(dr * dr + dg * dg + db * db);
-      const luma = (r + g + b) / 3;
-      const chroma = Math.max(r, g, b) - Math.min(r, g, b);
-      let a = 1;
-      if (dist < 28 && chroma < 22) a = 0;
-      else if (dist < 42 && chroma < 28) a = (dist - 28) / 14;
-      if (luma < 22 && chroma < 12) a = 0;
-      else if (luma < 36 && chroma < 16) a *= (luma - 22) / 14;
-      const outA = Math.round(255 * Math.max(0, Math.min(1, a)));
-      d[i + 3] = outA;
-      if (outA > 40) {
+      const card = isBackdropPixel(d[i], d[i + 1], d[i + 2], bg);
+      if (card && (d[i + 3] < 220 || x < edgeBand || x >= w - edgeBand || y < edgeBand || y >= h - edgeBand)) {
+        d[i + 3] = 0;
+        continue;
+      }
+      if (d[i + 3] > 48 && !card) {
         if (x < minX) minX = x;
         if (y < minY) minY = y;
         if (x > maxX) maxX = x;
@@ -85,7 +152,7 @@ export function cutoutSpriteTexture(src: THREE.Texture): THREE.Texture {
   ctx.putImageData(image, 0, 0);
 
   if (maxX <= minX || maxY <= minY) return src;
-  const pad = 4;
+  const pad = 2;
   const x0 = Math.max(0, minX - pad);
   const y0 = Math.max(0, minY - pad);
   const cw = Math.min(w, maxX + pad) - x0;
@@ -98,11 +165,16 @@ export function cutoutSpriteTexture(src: THREE.Texture): THREE.Texture {
   cctx.drawImage(canvas, x0, y0, cw, ch, 0, 0, cw, ch);
   const crop = cctx.getImageData(0, 0, cw, ch);
   const cd = crop.data;
-  const rim = 2;
+  const rim = 4;
   for (let y = 0; y < ch; y++) {
     for (let x = 0; x < cw; x++) {
+      const i = (y * cw + x) * 4;
       if (x < rim || y < rim || x >= cw - rim || y >= ch - rim) {
-        cd[(y * cw + x) * 4 + 3] = 0;
+        cd[i + 3] = 0;
+        continue;
+      }
+      if (isBackdropPixel(cd[i], cd[i + 1], cd[i + 2], bg) && (x < rim + 6 || y < rim + 6 || x >= cw - rim - 6 || y >= ch - rim - 6)) {
+        cd[i + 3] = 0;
       }
     }
   }

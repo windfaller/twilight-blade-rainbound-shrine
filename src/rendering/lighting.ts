@@ -13,12 +13,12 @@ export interface LightRig {
 
 export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
   scene.environment = null;
-  scene.fog = new THREE.FogExp2(0x15202c, quality === "low" ? 0.01 : 0.0065);
-  const ambient = new THREE.AmbientLight(0x5a6a7c, 1.05);
+  scene.fog = new THREE.FogExp2(0x0b1c22, quality === "low" ? 0.012 : 0.0075);
+  const ambient = new THREE.AmbientLight(0x2c4652, 0.88);
   scene.add(ambient);
-  const hemi = new THREE.HemisphereLight(0x9ab0c8, 0x1c1812, 1.25);
+  const hemi = new THREE.HemisphereLight(0x4a7a88, 0x0e1210, 1.12);
   scene.add(hemi);
-  const moon = new THREE.DirectionalLight(0xc8d8ee, 1.35);
+  const moon = new THREE.DirectionalLight(0xa8c4c8, 1.08);
   moon.position.set(-18, 26, -2);
   moon.target.position.set(0, 0, 12);
   moon.castShadow = quality === "high";

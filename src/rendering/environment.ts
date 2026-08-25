@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { LANTERN_POINTS, STAIR_STEPS, TORII_GATES, groundHeight } from "../game/data/stages";
 import { addLanternLight, type LightRig } from "./lighting";
 import { makeWetStoneMaps, wetStoneMat } from "./wetstone";
+import { makeWetWoodMaps, wetWoodMat } from "./wetwood";
 import type { Quality } from "../game/types";
 
 export interface EnvHandles {
@@ -42,11 +43,12 @@ export function buildEnvironment(
   );
   scene.add(sky);
 
-  addGroundStrip(scene, wet, -7.4, 7.4, 3.4, 10.2, 0, 0x7a828c, 16);
-  addFlagstoneLift(scene, wet);
+  addDarkSoil(scene, -7.4, 7.4, 3.2, 10.4, -0.08);
+  addWoodWalkway(scene, -2.15, 2.15, 4.0, 10.35, 0.06);
   addStairs(scene, wet, 8, 24);
-  addGroundStrip(scene, wet, -6.5, 6.5, 24, 30, 5, 0x7a828c, 14);
-  addGroundStrip(scene, wet, -8, 8.5, 29.5, 41, 5, 0x7a828c, 14);
+  addDarkSoil(scene, -6.8, 6.8, 23.8, 41.2, 4.86);
+  addWoodWalkway(scene, -2.35, 2.35, 24, 40.6, 5.06);
+  addForegroundToriiPost(scene, verm);
   addBridge(scene, wet, wood);
   addGroundStrip(scene, wet, -11, 12, 50.5, 74, 5);
   addGroundStrip(scene, wet, -9, 9, 75, 91, 5);
@@ -92,6 +94,40 @@ export function buildEnvironment(
   scene.add(crater);
 
   return { rain, mist, maple, gateBar, crater };
+}
+
+function addDarkSoil(scene: THREE.Scene, minX: number, maxX: number, minZ: number, maxZ: number, y: number): void {
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(maxX - minX, 0.22, maxZ - minZ),
+    new THREE.MeshStandardMaterial({ color: 0x141c1e, roughness: 0.92, metalness: 0.02, envMapIntensity: 0 }),
+  );
+  mesh.position.set((minX + maxX) / 2, y, (minZ + maxZ) / 2);
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+}
+
+function addWoodWalkway(scene: THREE.Scene, minX: number, maxX: number, minZ: number, maxZ: number, y: number): void {
+  const maps = makeWetWoodMaps();
+  const depth = maxZ - minZ;
+  const plank = 0.34;
+  let x = minX;
+  let i = 0;
+  while (x < maxX - 0.08) {
+    const w = Math.min(plank, maxX - x);
+    const mat = wetWoodMat(maps, 0.14, Math.max(1.1, depth / 1.4), 0x3c2c20, i * 0.13);
+    const board = new THREE.Mesh(new THREE.BoxGeometry(w * 0.94, 0.08, depth), mat);
+    board.position.set(x + w * 0.5, y, (minZ + maxZ) / 2);
+    board.receiveShadow = true;
+    scene.add(board);
+    x += w;
+    i += 1;
+  }
+  const beamMat = wetWoodMat(maps, 0.4, 0.2, 0x2a1c14);
+  for (const sx of [minX - 0.06, maxX + 0.06]) {
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.2, depth + 0.08), beamMat);
+    beam.position.set(sx, y - 0.04, (minZ + maxZ) / 2);
+    scene.add(beam);
+  }
 }
 
 function addGroundStrip(
@@ -361,17 +397,23 @@ function addLantern(
   scene.add(g);
 }
 
-function addFlagstoneLift(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>): void {
-  for (const [x, z, w, d, lift] of [
-    [-1.8, 6.4, 1.7, 1.35, 0.045],
-    [1.6, 7.8, 1.55, 1.2, 0.035],
-    [0.15, 5.6, 1.4, 1.05, 0.028],
-  ] as const) {
-    const slab = new THREE.Mesh(new THREE.BoxGeometry(w, 0.08, d), wetStoneMat(wet, 0.22, 0.18, 0x88909a));
-    slab.position.set(x, lift, z);
-    slab.receiveShadow = true;
-    scene.add(slab);
-  }
+function addForegroundToriiPost(scene: THREE.Scene, verm: THREE.Texture): void {
+  const mat = new THREE.MeshStandardMaterial({
+    map: verm,
+    color: 0xc43a2c,
+    roughness: 0.38,
+    metalness: 0.08,
+    emissive: 0x4a1008,
+    emissiveIntensity: 0.35,
+    envMapIntensity: 0,
+  });
+  const post = new THREE.Mesh(new THREE.BoxGeometry(0.58, 6.4, 0.58), mat);
+  post.position.set(-3.15, 3.15, 5.15);
+  post.castShadow = true;
+  post.name = "occluder";
+  const cap = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.22, 0.72), mat);
+  cap.position.set(-3.15, 6.45, 5.15);
+  scene.add(post, cap);
 }
 
 function addPine(scene: THREE.Scene, x: number, y: number, z: number, scale: number): void {
@@ -385,7 +427,7 @@ function addPine(scene: THREE.Scene, x: number, y: number, z: number, scale: num
   for (let i = 0; i < 4; i++) {
     const needle = new THREE.Mesh(
       new THREE.ConeGeometry(1.05 - i * 0.14, 1.55, 7),
-      new THREE.MeshStandardMaterial({ color: 0x16301c, roughness: 0.78, envMapIntensity: 0 }),
+      new THREE.MeshStandardMaterial({ color: 0x0d2c2a, roughness: 0.8, envMapIntensity: 0 }),
     );
     needle.position.y = 2.1 + i * 0.78;
     pine.add(needle);
@@ -412,7 +454,7 @@ function addForegroundOccluders(
   for (let i = 0; i < 4; i++) {
     const needle = new THREE.Mesh(
       new THREE.ConeGeometry(1.15 - i * 0.16, 1.7, 7),
-      new THREE.MeshStandardMaterial({ color: 0x16301c, roughness: 0.78 }),
+      new THREE.MeshStandardMaterial({ color: 0x0d2c2a, roughness: 0.8 }),
     );
     needle.position.y = 2.4 + i * 0.85;
     pine.add(needle);
@@ -423,8 +465,13 @@ function addForegroundOccluders(
   });
   scene.add(pine);
   addPine(scene, 6.8, 0, 6.4, 0.82);
+  addPine(scene, 5.4, 0, 9.1, 0.7);
+  addPine(scene, -7.4, 0.4, 11.2, 0.95);
+  addPine(scene, 7.1, 1.6, 14.8, 0.88);
   addPine(scene, -8.2, 2.4, 18.5, 1.15);
   addPine(scene, 7.6, 4.4, 26.2, 1.05);
+  addPine(scene, -7.8, 5, 30.4, 0.92);
+  addPine(scene, 8.2, 5, 37.6, 1.08);
   for (const [x, z] of [
     [-4.4, 3.9],
     [-3.2, 3.55],
@@ -481,14 +528,17 @@ function addMaples(scene: THREE.Scene, quality: Quality): void {
 
 function addKeeperBeacon(scene: THREE.Scene): void {
   const g = new THREE.Group();
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(0.7, 0.95, 28),
-    new THREE.MeshBasicMaterial({ color: 0xffd27a, side: THREE.DoubleSide, transparent: true, opacity: 0.55 }),
+  const gold = new THREE.MeshBasicMaterial({ color: 0xffd27a, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.78, 1.02, 36), gold);
+  const inner = new THREE.Mesh(
+    new THREE.RingGeometry(0.42, 0.55, 28),
+    new THREE.MeshBasicMaterial({ color: 0xffc56a, side: THREE.DoubleSide, transparent: true, opacity: 0.4 }),
   );
-  ring.rotation.x = -Math.PI / 2;
-  ring.position.y = 0.08;
-  g.add(ring);
-  g.position.set(2.15, 5, 33.4);
+  ring.rotation.x = inner.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.09;
+  inner.position.y = 0.085;
+  g.add(ring, inner);
+  g.position.set(2.15, 5.06, 33.4);
   scene.add(g);
 }
 

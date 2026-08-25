@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
+import { makeCharacterView } from "../rendering/characters";
+import { cutoutSpriteTexture, isBackdropPixel } from "../rendering/cutout";
 import { rainStreakCount } from "../rendering/environment";
 import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting, lanternWarmth } from "../rendering/lighting";
-import { makeCharacterView } from "../rendering/characters";
-import { cutoutSpriteTexture } from "../rendering/cutout";
 import { wetStoneMat } from "../rendering/wetstone";
+import { wetWoodMat } from "../rendering/wetwood";
 
 describe("lighting hotfix", () => {
   it("caps lantern point lights and always keeps hemi + ambient", () => {
@@ -37,6 +38,20 @@ describe("lighting hotfix", () => {
     expect(makeCharacterView.toString()).not.toMatch(/PlaneGeometry\(\s*w\s*\*\s*1\.1/);
     expect(makeCharacterView.toString()).not.toContain("BoxGeometry");
     expect(cutoutSpriteTexture.toString()).not.toContain("blurAlpha");
+  });
+
+  it("keys pale cards, cool mid-gray wash, and navy studio — not cloth or skin", () => {
+    const navy = { r: 18, g: 24, b: 29 };
+    expect(isBackdropPixel(200, 200, 204, navy)).toBe(true);
+    expect(isBackdropPixel(20, 28, 36, navy)).toBe(true);
+    expect(isBackdropPixel(78, 89, 115, navy)).toBe(true);
+    expect(isBackdropPixel(196, 58, 44, navy)).toBe(false);
+    expect(isBackdropPixel(107, 78, 77, navy)).toBe(false);
+  });
+
+  it("wet wood factory is Standard, not Physical", () => {
+    expect(wetWoodMat.toString()).toContain("MeshStandardMaterial");
+    expect(wetWoodMat.toString()).not.toContain("MeshPhysicalMaterial");
   });
 
   it("warms the follow rim when standing next to a lantern", () => {
