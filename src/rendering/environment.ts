@@ -42,7 +42,7 @@ export function buildEnvironment(
   );
   scene.add(sky);
 
-  addGroundStrip(scene, wet, -4.8, 4.8, 5.2, 9.1, 0);
+  addGroundStrip(scene, wet, -7.4, 7.4, 3.4, 10.2, 0, 0x7a828c);
   addStairs(scene, wet, 8, 24);
   addGroundStrip(scene, wet, -6.5, 6.5, 24, 30, 5);
   addGroundStrip(scene, wet, -8, 8.5, 29.5, 41, 5);
@@ -99,12 +99,13 @@ function addGroundStrip(
   minZ: number,
   maxZ: number,
   y: number,
+  tint = 0x7a828c,
 ): void {
   const w = maxX - minX;
   const d = maxZ - minZ;
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(w, 0.32, d),
-    wetStoneMat(wet, Math.max(0.7, w / 5.4), Math.max(0.55, d / 5.4), 0x6a727c),
+    wetStoneMat(wet, Math.max(0.7, w / 5.4), Math.max(0.55, d / 5.4), tint),
   );
   mesh.position.set((minX + maxX) / 2, y - 0.15, (minZ + maxZ) / 2);
   mesh.receiveShadow = true;
@@ -128,7 +129,7 @@ function addStairs(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>,
     const depth = Math.max(0.72, zB - zA + 0.06);
     const tread = new THREE.Mesh(
       new THREE.BoxGeometry(6.05, 0.38, depth),
-      wetStoneMat(wet, 1.15, 0.32, 0x717986, i * 0.08, i * 0.11),
+      wetStoneMat(wet, 1.15, 0.32, 0x8a929c, i * 0.08, i * 0.11),
     );
     tread.position.set(0, y - 0.04, (zA + zB) / 2);
     tread.receiveShadow = true;
@@ -189,11 +190,11 @@ function addTorii(
   const g = new THREE.Group();
   const mat = new THREE.MeshStandardMaterial({
     map: verm,
-    color: 0xd44532,
-    roughness: 0.34,
-    metalness: 0.1,
-    emissive: 0x5a160a,
-    emissiveIntensity: 0.55,
+    color: 0xe24a36,
+    roughness: 0.3,
+    metalness: 0.12,
+    emissive: 0x8a1c0c,
+    emissiveIntensity: 1.05,
   });
   const dark = new THREE.MeshStandardMaterial({ map: wood, color: 0x2a1c12, roughness: 0.7, metalness: 0.05 });
   const h = 5.5 * scale;
@@ -386,7 +387,7 @@ function addPuddles(scene: THREE.Scene): void {
 }
 
 function makeRain(quality: Quality): THREE.LineSegments {
-  const n = quality === "high" ? 1400 : quality === "med" ? 780 : 320;
+  const n = quality === "high" ? 1900 : quality === "med" ? 1000 : 420;
   const pos = new Float32Array(n * 6);
   for (let i = 0; i < n; i++) {
     const near = i < n * 0.55;
@@ -405,7 +406,7 @@ function makeRain(quality: Quality): THREE.LineSegments {
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   return new THREE.LineSegments(
     geo,
-    new THREE.LineBasicMaterial({ color: 0xd0deee, transparent: true, opacity: 0.52 }),
+    new THREE.LineBasicMaterial({ color: 0xe8f2fc, transparent: true, opacity: 0.72 }),
   );
 }
 

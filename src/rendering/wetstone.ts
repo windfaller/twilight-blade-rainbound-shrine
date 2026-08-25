@@ -31,7 +31,7 @@ export function makeWetStoneMaps(): { albedo: THREE.CanvasTexture; roughness: TH
       const z = iz * ch + jz + 4;
       const w = cw * (0.72 + hash(ix, iz, 3) * 0.2);
       const d = ch * (0.7 + hash(ix, iz, 4) * 0.22);
-      const shade = 38 + hash(ix, iz, 5) * 28;
+      const shade = 58 + hash(ix, iz, 5) * 36;
       const cool = hash(ix, iz, 6) * 10;
       a.fillStyle = `rgb(${shade + 4 | 0},${shade + 6 | 0},${shade + 10 + cool | 0})`;
       a.fillRect(x, z, w, d);

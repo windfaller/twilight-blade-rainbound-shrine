@@ -60,7 +60,7 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
   root.name = id;
   const billboard = new THREE.Group();
   billboard.name = "billboard";
-  const visH = height * 1.32;
+  const visH = height * 1.58;
   const img = tex.image as { width?: number; height?: number } | undefined;
   const aspect = img?.width && img?.height ? Math.min(0.72, Math.max(0.42, img.width / img.height)) : 0.52;
   const w = visH * aspect;
@@ -164,7 +164,7 @@ export function syncCharacterView(view: CharacterView, actor: Actor, alpha: numb
   view.parts.rArm.rotation.x = pose.rArm;
   view.parts.weapon.rotation.z = pose.weapon;
   view.billboard.quaternion.copy(cam.quaternion);
-  const s = (actor.height * 1.32) / 1.76;
+  const s = (actor.height * 1.58) / 1.76;
   view.shadow.scale.set(1.05 * s + Math.abs(pose.hipY), 0.7 * s, 1);
   const mats = [view.sprite, ...view.overlays].map((m) => m.material as THREE.MeshStandardMaterial);
   const op =

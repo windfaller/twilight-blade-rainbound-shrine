@@ -37,7 +37,7 @@ export class WorldRenderer {
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.08;
+    this.renderer.toneMappingExposure = 1.24;
     this.renderer.shadowMap.enabled = true;
     this.scene.background = new THREE.Color(0x0c121c);
     this.scene.add(this.vfx.root);
