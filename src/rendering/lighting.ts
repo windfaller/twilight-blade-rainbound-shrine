@@ -6,15 +6,16 @@ export interface LightRig {
   fill: THREE.HemisphereLight;
   rim: THREE.DirectionalLight;
   lanterns: THREE.PointLight[];
+  followRim: THREE.PointLight;
 }
 
 export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
-  scene.fog = new THREE.FogExp2(0x141c28, quality === "low" ? 0.012 : 0.0075);
-  const hemi = new THREE.HemisphereLight(0xc0d4e8, 0x241810, 1.35);
+  scene.fog = new THREE.FogExp2(0x0c1420, quality === "low" ? 0.014 : 0.009);
+  const hemi = new THREE.HemisphereLight(0x6e88a8, 0x100c0a, 0.42);
   scene.add(hemi);
-  const moon = new THREE.DirectionalLight(0xe8f2ff, 2.25);
-  moon.position.set(-18, 28, 2);
-  moon.target.position.set(0, 0, 14);
+  const moon = new THREE.DirectionalLight(0xb8cce8, 1.15);
+  moon.position.set(-20, 26, -2);
+  moon.target.position.set(0, 0, 12);
   moon.castShadow = quality !== "low";
   if (moon.castShadow) {
     moon.shadow.mapSize.set(quality === "high" ? 2048 : 1024, quality === "high" ? 2048 : 1024);
@@ -29,27 +30,18 @@ export function createLighting(scene: THREE.Scene, quality: Quality): LightRig {
   }
   scene.add(moon);
   scene.add(moon.target);
-  const rim = new THREE.DirectionalLight(0xb4cce8, 0.95);
-  rim.position.set(12, 8, 16);
+  const rim = new THREE.DirectionalLight(0xd2e4f6, 0.85);
+  rim.position.set(14, 7, 10);
   scene.add(rim);
-  const bounce = new THREE.DirectionalLight(0x3a2a1c, 0.38);
-  bounce.position.set(4, 2.2, 10);
-  scene.add(bounce);
-  const key = new THREE.PointLight(0xffc56a, 9.4, 14, 1.15);
-  key.position.set(1.7, 2.15, 8.1);
-  scene.add(key);
-  const moonFill = new THREE.PointLight(0xb7cce4, 3.8, 16, 1.35);
-  moonFill.position.set(-3.1, 3.6, 6.2);
-  scene.add(moonFill);
-  const stairKey = new THREE.PointLight(0xffd27a, 7.2, 18, 1.2);
-  stairKey.position.set(0.4, 3.6, 12.2);
-  scene.add(stairKey);
-  return { moon, fill: hemi, rim, lanterns: [] };
+  const followRim = new THREE.PointLight(0xffc56a, 3.2, 7.5, 1.6);
+  followRim.position.set(1.4, 1.8, 8.2);
+  scene.add(followRim);
+  return { moon, fill: hemi, rim, lanterns: [], followRim };
 }
 
 export function addLanternLight(scene: THREE.Scene, rig: LightRig, x: number, y: number, z: number, quality: Quality): void {
-  const intensity = quality === "low" ? 5.4 : 8.6;
-  const light = new THREE.PointLight(0xffb45a, intensity, quality === "high" ? 16 : 12, 1.35);
+  const intensity = quality === "low" ? 6.2 : 9.8;
+  const light = new THREE.PointLight(0xffb45a, intensity, quality === "high" ? 9.5 : 7.5, 1.7);
   light.position.set(x, y + 1.28, z);
   if (quality === "high") {
     light.castShadow = true;
@@ -63,4 +55,23 @@ export function applyQuality(renderer: THREE.WebGLRenderer, quality: Quality): v
   renderer.shadowMap.enabled = quality !== "low";
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setPixelRatio(quality === "high" ? Math.min(devicePixelRatio, 2) : quality === "med" ? 1.25 : 1);
+}
+
+export function bakeNightEnv(renderer: THREE.WebGLRenderer, scene: THREE.Scene): void {
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const env = new THREE.Scene();
+  env.background = new THREE.Color(0x152033);
+  const warm = new THREE.Mesh(
+    new THREE.SphereGeometry(4, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffb45a }),
+  );
+  warm.position.set(6, 1.2, -8);
+  const cool = new THREE.Mesh(
+    new THREE.SphereGeometry(6, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0x7ea0c4 }),
+  );
+  cool.position.set(-10, 8, 4);
+  env.add(warm, cool);
+  scene.environment = pmrem.fromScene(env, 0.08).texture;
+  pmrem.dispose();
 }

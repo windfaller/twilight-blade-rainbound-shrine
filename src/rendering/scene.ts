@@ -13,7 +13,7 @@ import { makeCharacterView, syncCharacterView, swapTexture, type CharacterView }
 import { cameraYaw, createGameCamera, syncCamera } from "./camera";
 import { cutoutSpriteTexture } from "./cutout";
 import { buildEnvironment, stepAtmosphere, type EnvHandles } from "./environment";
-import { applyQuality, createLighting } from "./lighting";
+import { applyQuality, bakeNightEnv, createLighting } from "./lighting";
 import { VfxWorld } from "./vfx";
 
 export class WorldRenderer {
@@ -27,6 +27,7 @@ export class WorldRenderer {
   textures = new Map<string, THREE.Texture>();
   private seenVfx = new Set<string>();
   private fadeMats: THREE.Mesh[] = [];
+  private followRim: THREE.PointLight | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({
@@ -39,7 +40,7 @@ export class WorldRenderer {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.14;
     this.renderer.shadowMap.enabled = true;
-    this.scene.background = new THREE.Color(0x0c121c);
+    this.scene.background = new THREE.Color(0x0b121c);
     this.scene.add(this.vfx.root);
   }
 
@@ -69,7 +70,9 @@ export class WorldRenderer {
     const tex: Record<string, THREE.Texture> = {};
     for (const [k, v] of this.textures) tex[k] = v;
     const lights = createLighting(this.scene, quality);
+    this.followRim = lights.followRim;
     this.env = buildEnvironment(this.scene, tex, lights, quality);
+    bakeNightEnv(this.renderer, this.scene);
     applyQuality(this.renderer, quality);
     this.setupComposer(quality);
     this.scene.traverse((o) => {
@@ -150,6 +153,7 @@ export class WorldRenderer {
     const px = lerp(st.player.prevPos.x, st.player.pos.x, alpha);
     const py = lerp(st.player.prevPos.y, st.player.pos.y, alpha);
     const pz = lerp(st.player.prevPos.z, st.player.pos.z, alpha);
+    if (this.followRim) this.followRim.position.set(px + 1.15, py + 1.65, pz + 0.35);
     syncCamera(this.camera, st.camera, { x: px, y: py, z: pz }, this.renderer.domElement.clientWidth / Math.max(1, this.renderer.domElement.clientHeight));
 
     this.fadeOccluders(new THREE.Vector3(px, py + 1.1, pz));

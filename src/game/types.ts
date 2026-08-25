@@ -460,4 +460,6 @@ export interface UiSnapshot {
   interactInRange: boolean;
   objective: string;
   objectiveTarget: { x: number; z: number } | null;
+  place: string;
+  weather: string;
 }

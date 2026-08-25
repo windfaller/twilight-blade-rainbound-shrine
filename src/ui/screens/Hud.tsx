@@ -22,25 +22,40 @@ export function Hud({
   const hp = snap.player.hp / snap.player.maxHp;
   const sp = snap.player.spirit / snap.player.maxSpirit;
   return (
-    <div className="pass-through" style={{ position: "absolute", inset: 0 }}>
+    <div className="pass-through tb-hud" style={{ position: "absolute", inset: 0 }}>
       <div className="tb-hud-vitals">
-        <img src={kit.artPortrait} alt={kit.name} width={56} height={56} />
-        <div style={{ minWidth: 220 }}>
+        <div className="tb-hud-diamond">
+          <img src={kit.artPortrait} alt={kit.name} />
+        </div>
+        <div>
           <div className="tb-hud-name">{kit.name}</div>
-          <Bar value={hp} color="#c43b2a" />
-          <Bar value={sp} color="#7eb6d8" />
+          <div className="tb-hud-bar tb-hud-hp">
+            <div style={{ width: `${Math.round(Math.max(0, Math.min(1, hp)) * 100)}%` }} />
+          </div>
+          <div className="tb-hud-bar tb-hud-sp">
+            <div style={{ width: `${Math.round(Math.max(0, Math.min(1, sp)) * 100)}%` }} />
+          </div>
           {snap.player.shield > 0 && <div className="tb-gold">護盾 {Math.round(snap.player.shield)}</div>}
         </div>
+      </div>
+      <div className="tb-hud-place">
+        <div className="tb-hud-weather">
+          {snap.weather} · {snap.place}
+        </div>
+        <div className="tb-hud-locale">{snap.place}</div>
       </div>
       {snap.boss && (
         <div className="tb-hud-boss">
           <div className="tb-hud-name" style={{ textAlign: "center" }}>
             {snap.boss.name} · 第{snap.boss.phase}相
           </div>
-          <Bar value={snap.boss.hp / snap.boss.maxHp} color="#3aa7d8" />
+          <div className="tb-hud-bar tb-hud-hp">
+            <div style={{ width: `${Math.round(Math.max(0, Math.min(1, snap.boss.hp / snap.boss.maxHp)) * 100)}%` }} />
+          </div>
         </div>
       )}
       <button className="tb-hud-obj" onClick={onGoObjective}>
+        <span className="tb-hud-gem" aria-hidden />
         {snap.objective}
       </button>
       {snap.encounterName && !snap.boss && <div className="tb-hud-enc">{snap.encounterName}</div>}
@@ -80,14 +95,6 @@ export function Hud({
           <div className="tb-title tb-hud-cutin-name">{kit.skills[2].name}</div>
         </div>
       )}
-    </div>
-  );
-}
-
-function Bar({ value, color }: { value: number; color: string }) {
-  return (
-    <div className="tb-hud-bar">
-      <div style={{ width: `${Math.round(Math.max(0, Math.min(1, value)) * 100)}%`, height: "100%", background: color }} />
     </div>
   );
 }

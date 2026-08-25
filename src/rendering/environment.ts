@@ -63,6 +63,7 @@ export function buildEnvironment(
   addMoon(scene);
   addKeeperBeacon(scene);
   addPuddles(scene);
+  addForegroundOccluders(scene, wet, wood);
 
   const rain = makeRain(quality);
   scene.add(rain);
@@ -237,7 +238,15 @@ function addTorii(
   scene.add(g);
 }
 
-function addLantern(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>, wood: THREE.Texture, x: number, y: number, z: number): void {
+function addLantern(
+  scene: THREE.Scene,
+  wet: ReturnType<typeof makeWetStoneMaps>,
+  wood: THREE.Texture,
+  x: number,
+  y: number,
+  z: number,
+  scale = 1,
+): void {
   const g = new THREE.Group();
   const stone = wetStoneMat(wet, 0.45, 0.7, 0x7a828c);
   const woodMat = new THREE.MeshStandardMaterial({ map: wood, color: 0x3a2a1c, roughness: 0.68, metalness: 0.04 });
@@ -292,6 +301,7 @@ function addLantern(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>
   moss.scale.set(1.4, 0.42, 1.1);
   g.add(roof, glow, moss);
   g.position.set(x, y, z);
+  g.scale.setScalar(scale);
   g.traverse((o) => {
     if (o instanceof THREE.Mesh) {
       o.castShadow = true;
@@ -299,6 +309,53 @@ function addLantern(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>
     }
   });
   scene.add(g);
+}
+
+function addForegroundOccluders(
+  scene: THREE.Scene,
+  wet: ReturnType<typeof makeWetStoneMaps>,
+  wood: THREE.Texture,
+): void {
+  addLantern(scene, wet, wood, -5.35, 0, 4.35, 1.55);
+  const heroGlow = new THREE.PointLight(0xffb45a, 8.4, 8.5, 1.55);
+  heroGlow.position.set(-5.35, 2.1, 4.35);
+  scene.add(heroGlow);
+  const pine = new THREE.Group();
+  pine.name = "occluder";
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.22, 0.32, 4.6, 7),
+    new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.86 }),
+  );
+  trunk.position.y = 2.3;
+  pine.add(trunk);
+  for (let i = 0; i < 4; i++) {
+    const needle = new THREE.Mesh(
+      new THREE.ConeGeometry(1.15 - i * 0.16, 1.7, 7),
+      new THREE.MeshStandardMaterial({ color: 0x16301c, roughness: 0.78 }),
+    );
+    needle.position.y = 2.4 + i * 0.85;
+    pine.add(needle);
+  }
+  pine.position.set(-6.6, 0, 5.15);
+  pine.traverse((o) => {
+    if (o instanceof THREE.Mesh) o.castShadow = true;
+  });
+  scene.add(pine);
+  for (const [x, z] of [
+    [-4.4, 3.9],
+    [-3.2, 3.55],
+    [4.6, 4.2],
+    [-5.8, 6.1],
+  ] as const) {
+    const blade = new THREE.Mesh(
+      new THREE.ConeGeometry(0.12, 0.85, 4),
+      new THREE.MeshStandardMaterial({ color: 0x3a4a28, roughness: 0.9 }),
+    );
+    blade.position.set(x, 0.4, z);
+    blade.rotation.z = 0.18;
+    blade.castShadow = true;
+    scene.add(blade);
+  }
 }
 
 function addWalls(scene: THREE.Scene, wet: ReturnType<typeof makeWetStoneMaps>): void {
@@ -366,19 +423,23 @@ function addMoon(scene: THREE.Scene): void {
 }
 
 function addPuddles(scene: THREE.Scene): void {
-  const mat = new THREE.MeshStandardMaterial({
+  const mat = new THREE.MeshPhysicalMaterial({
     color: 0x1a2430,
-    metalness: 0.86,
-    roughness: 0.08,
-    envMapIntensity: 1.4,
+    metalness: 0.78,
+    roughness: 0.06,
+    clearcoat: 1,
+    clearcoatRoughness: 0.08,
+    envMapIntensity: 1.8,
     transparent: true,
-    opacity: 0.72,
+    opacity: 0.7,
   });
   for (const [x, z, s] of [
     [-1.1, 7.1, 0.85],
     [1.35, 8.05, 0.62],
     [0.2, 6.7, 0.5],
     [-2.1, 12.4, 0.7],
+    [-3.4, 5.6, 0.55],
+    [2.2, 9.4, 0.48],
   ] as const) {
     const p = new THREE.Mesh(new THREE.CircleGeometry(s, 18), mat);
     p.rotation.x = -Math.PI / 2;
