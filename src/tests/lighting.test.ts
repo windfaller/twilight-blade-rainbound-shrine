@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import { makeCharacterView } from "../rendering/characters";
-import { cutoutSpriteTexture, isBackdropPixel } from "../rendering/cutout";
+import { cutoutSpriteTexture, isBackdropPixel, isChromaGreen } from "../rendering/cutout";
 import { rainStreakCount } from "../rendering/environment";
 import { MAX_LANTERN_LIGHTS, addLanternLight, bakeNightEnv, createLighting, lanternWarmth } from "../rendering/lighting";
 import { wetStoneMat } from "../rendering/wetstone";
@@ -47,6 +47,8 @@ describe("lighting hotfix", () => {
     expect(isBackdropPixel(78, 89, 115, navy)).toBe(true);
     expect(isBackdropPixel(196, 58, 44, navy)).toBe(false);
     expect(isBackdropPixel(107, 78, 77, navy)).toBe(false);
+    expect(isChromaGreen(0, 255, 0)).toBe(true);
+    expect(isBackdropPixel(0, 255, 0, navy)).toBe(true);
   });
 
   it("wet wood factory is Standard, not Physical", () => {

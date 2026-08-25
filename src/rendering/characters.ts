@@ -34,7 +34,7 @@ function litSprite(map: THREE.Texture, opacity = 1): THREE.MeshStandardMaterial 
     depthWrite: false,
     side: THREE.DoubleSide,
     opacity,
-    alphaTest: 0.18,
+    alphaTest: 0.2,
     roughness: 0.46,
     metalness: 0.03,
     emissive: new THREE.Color(0x14100c),
@@ -50,7 +50,7 @@ export function makeCharacterView(id: string, tex: THREE.Texture, height: number
   billboard.name = "billboard";
   const visH = height * 1.06;
   const img = tex.image as { width?: number; height?: number } | undefined;
-  const aspect = img?.width && img?.height ? Math.min(0.72, Math.max(0.42, img.width / img.height)) : 0.52;
+  const aspect = img?.width && img?.height ? Math.min(0.62, Math.max(0.28, img.width / img.height)) : 0.4;
   const w = visH * aspect;
   const body = new THREE.Mesh(new THREE.PlaneGeometry(w, visH, 6, 10), litSprite(tex));
   body.position.y = visH * 0.5;

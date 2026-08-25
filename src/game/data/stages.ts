@@ -34,8 +34,8 @@ function box(minX: number, maxX: number, minZ: number, maxZ: number) {
 }
 
 export const PILLARS: Circle[] = [
-  { x: -3.35, z: 8.85, r: 0.5 },
-  { x: 3.35, z: 8.85, r: 0.5 },
+  { x: -3.35, z: 16.4, r: 0.5 },
+  { x: 3.35, z: 16.4, r: 0.5 },
   { x: -3.6, z: 22.2, r: 0.55 },
   { x: 3.6, z: 22.2, r: 0.55 },
   { x: -3.8, z: 48, r: 0.45 },
@@ -129,7 +129,7 @@ export function groundHeight(_x: number, z: number): number {
 }
 
 export const TORII_GATES = [
-  { x: 0, z: 8.85, y: 0, scale: 1.02 },
+  { x: 0, z: 16.4, y: 2.4, scale: 0.92 },
   { x: 0, z: 22.2, y: 4.2, scale: 1 },
   { x: 0, z: 48, y: 5, scale: 0.92 },
   { x: 0, z: 93.4, y: 5, scale: 1.15 },
