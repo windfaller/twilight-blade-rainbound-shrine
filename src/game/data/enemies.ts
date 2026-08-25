@@ -1,3 +1,4 @@
+import { assetUrl } from "../../assets/manifest";
 import type { EnemyDef, EnemyId } from "../types";
 
 export const ENEMIES: Record<EnemyId, EnemyDef> = {
@@ -14,7 +15,7 @@ export const ENEMIES: Record<EnemyId, EnemyDef> = {
     startup: 0.38,
     active: 0.16,
     recover: 0.55,
-    art: "/assets/enemies/yokai-soldier.png",
+    art: assetUrl("/assets/enemies/yokai-soldier.png"),
     kind: "physical",
   },
   archer: {
@@ -30,7 +31,7 @@ export const ENEMIES: Record<EnemyId, EnemyDef> = {
     startup: 0.55,
     active: 0.12,
     recover: 0.7,
-    art: "/assets/enemies/ofuda-archer.png",
+    art: assetUrl("/assets/enemies/ofuda-archer.png"),
     kind: "spirit",
   },
   hound: {
@@ -46,7 +47,7 @@ export const ENEMIES: Record<EnemyId, EnemyDef> = {
     startup: 0.22,
     active: 0.12,
     recover: 0.4,
-    art: "/assets/enemies/spirit-hound.png",
+    art: assetUrl("/assets/enemies/spirit-hound.png"),
     kind: "spirit",
   },
   caster: {
@@ -62,7 +63,7 @@ export const ENEMIES: Record<EnemyId, EnemyDef> = {
     startup: 0.85,
     active: 0.2,
     recover: 0.8,
-    art: "/assets/enemies/ofuda-caster.png",
+    art: assetUrl("/assets/enemies/ofuda-caster.png"),
     kind: "spirit",
   },
   elite: {
@@ -79,7 +80,7 @@ export const ENEMIES: Record<EnemyId, EnemyDef> = {
     active: 0.2,
     recover: 0.7,
     hyperarmor: true,
-    art: "/assets/enemies/elite-warrior.png",
+    art: assetUrl("/assets/enemies/elite-warrior.png"),
     kind: "physical",
   },
   boss: {
@@ -96,8 +97,8 @@ export const ENEMIES: Record<EnemyId, EnemyDef> = {
     active: 0.22,
     recover: 0.65,
     hyperarmor: true,
-    art: "/assets/enemies/boss-phase1.png",
-    artAlt: "/assets/enemies/boss-phase2.png",
+    art: assetUrl("/assets/enemies/boss-phase1.png"),
+    artAlt: assetUrl("/assets/enemies/boss-phase2.png"),
     kind: "spirit",
   },
 };

@@ -1,9 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from "node:fs";
 import path from "node:path";
 
-export default defineConfig({
-  plugins: [react()],
+function pagesFallback() {
+  return {
+    name: "pages-404-fallback",
+    closeBundle() {
+      const index = path.resolve("dist/index.html");
+      const dest = path.resolve("dist/404.html");
+      if (fs.existsSync(index)) fs.copyFileSync(index, dest);
+    },
+  };
+}
+
+export default defineConfig(({ command }) => ({
+  base: command === "build" ? "/twilight-blade-rainbound-shrine/" : "/",
+  plugins: [react(), pagesFallback()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
@@ -21,4 +34,4 @@ export default defineConfig({
     target: "es2022",
     sourcemap: true,
   },
-});
+}));
