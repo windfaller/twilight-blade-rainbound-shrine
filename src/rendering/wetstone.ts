@@ -88,19 +88,18 @@ export function wetStoneMat(
   maps: { albedo: THREE.CanvasTexture; roughness: THREE.CanvasTexture },
   repeatX: number,
   repeatY: number,
-  tint = 0x6e7680,
+  tint = 0x8a929c,
   offsetX = 0,
   offsetY = 0,
-): THREE.MeshPhysicalMaterial {
+): THREE.MeshStandardMaterial {
   const { map, roughnessMap } = stoneClone(maps, repeatX, repeatY, offsetX, offsetY);
-  return new THREE.MeshPhysicalMaterial({
+  return new THREE.MeshStandardMaterial({
     map,
     roughnessMap,
     color: tint,
-    roughness: 0.18,
-    metalness: 0.12,
-    clearcoat: 0.62,
-    clearcoatRoughness: 0.16,
-    envMapIntensity: 1.35,
+    roughness: 0.42,
+    metalness: 0.08,
+    emissive: 0x000000,
+    envMapIntensity: 0,
   });
 }

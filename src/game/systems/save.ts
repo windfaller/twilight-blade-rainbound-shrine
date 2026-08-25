@@ -8,7 +8,7 @@ export interface SaveBlob {
 }
 
 export const DEFAULT_SETTINGS: SettingsState = {
-  quality: "high",
+  quality: "med",
   music: 0.7,
   sfx: 0.85,
   ambience: 0.55,
@@ -26,8 +26,11 @@ export function loadSave(): SaveBlob {
     const raw = globalThis.localStorage?.getItem(KEY);
     if (!raw) return { settings: { ...DEFAULT_SETTINGS }, unlocks: { ...DEFAULT_UNLOCKS, clearedKits: [], relicsSeen: [] } };
     const parsed = JSON.parse(raw) as SaveBlob;
+    const settings = { ...DEFAULT_SETTINGS, ...parsed.settings };
+    /* Production hotfix: old default was high bloom, which blacks the world on some GPUs. */
+    if (settings.quality === "high") settings.quality = "med";
     return {
-      settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
+      settings,
       unlocks: {
         ...DEFAULT_UNLOCKS,
         ...parsed.unlocks,
